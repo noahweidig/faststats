@@ -11,7 +11,13 @@ export async function initDB() {
     eh: { mainModule: DUCKDB_CDN + 'duckdb-eh.wasm', mainWorker: DUCKDB_CDN + 'duckdb-browser-eh.worker.js' }
   };
   const bundle = await duckdb.selectBundle(bundles);
-  const worker = new Worker(bundle.mainWorker);
+  
+  // Workaround for cross-origin workers (e.g. on GitHub Pages)
+  const workerResponse = await fetch(bundle.mainWorker);
+  const workerBlob = await workerResponse.blob();
+  const workerUrl = URL.createObjectURL(workerBlob);
+  const worker = new Worker(workerUrl);
+
   const logger = new duckdb.ConsoleLogger();
   db = new duckdb.AsyncDuckDB(logger, worker);
   await db.instantiate(bundle.mainModule);
