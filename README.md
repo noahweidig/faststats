@@ -1,0 +1,346 @@
+<div align="center">
+
+<br>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=00CCCC&center=true&vCenter=true&width=600&lines=QuickPlot+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=008080&center=true&vCenter=true&width=600&lines=QuickPlot+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything" alt="QuickPlot">
+</picture>
+
+<h3>Interactive Data Wrangling & Visualization — No Code Required</h3>
+
+<p>
+  <a href="https://noahweidig.shinyapps.io/quickplot/">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20App-Launch%20QuickPlot-008080?style=for-the-badge" alt="Live App">
+  </a>
+</p>
+
+<p>
+  <a href="https://github.com/noahweidig/quickplot/actions/workflows/deploy.yml">
+    <img src="https://github.com/noahweidig/quickplot/actions/workflows/deploy.yml/badge.svg" alt="Deploy">
+  </a>
+  <a href="https://www.r-project.org/">
+    <img src="https://img.shields.io/badge/R-≥4.0-276DC3?style=flat&logo=r&logoColor=white" alt="R">
+  </a>
+  <a href="https://shiny.posit.co/">
+    <img src="https://img.shields.io/badge/Shiny-Framework-75AADB?style=flat&logo=rstudio&logoColor=white" alt="Shiny">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat" alt="MIT License">
+  </a>
+  <img src="https://img.shields.io/github/stars/noahweidig/quickplot?style=flat&color=gold" alt="Stars">
+</p>
+
+<br>
+
+> **QuickPlot** turns raw data into insight in seconds. Upload a file, wrangle it visually,
+> build publication-quality plots, run statistics — then export everything, including the
+> reproducible R code, with a single click.
+
+<br>
+
+[**Try it now →**](https://noahweidig.shinyapps.io/quickplot/) &nbsp;·&nbsp;
+[Report a bug](https://github.com/noahweidig/quickplot/issues) &nbsp;·&nbsp;
+[Request a feature](https://github.com/noahweidig/quickplot/issues)
+
+<br>
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Why QuickPlot?](#-why-quickplot)
+- [Feature Tour](#-feature-tour)
+- [Built-in Datasets](#-built-in-datasets)
+- [Workflow](#-workflow)
+- [Technology Stack](#-technology-stack)
+- [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [Author](#-author)
+
+---
+
+## ✨ Why QuickPlot?
+
+Most data visualization tools force a choice: **powerful but complex** (write R/Python code) or **simple but limited** (point-and-click with no flexibility). QuickPlot breaks that trade-off.
+
+| | Spreadsheet tools | Coding in R/Python | **QuickPlot** |
+|---|:---:|:---:|:---:|
+| No installation needed | ✅ | ❌ | ✅ |
+| Handles CSV, Excel, TSV | ✅ | ✅ | ✅ |
+| ggplot2-quality visuals | ❌ | ✅ | ✅ |
+| Interactive (Plotly) charts | ❌ | ✅ | ✅ |
+| Reproducible code export | ❌ | ✅ | ✅ |
+| No coding required | ✅ | ❌ | ✅ |
+| Statistical modeling | ❌ | ✅ | ✅ |
+
+---
+
+## 🗺️ Feature Tour
+
+QuickPlot is organized into five purpose-built tabs, each one a step deeper into your data.
+
+<br>
+
+### 🧭 Overview — Instant Data Profiling
+Get the full picture of your dataset the moment it loads.
+
+- Row and column counts, data types at a glance
+- Per-column summaries (min, max, mean, missing-value counts)
+- Automatic type classification: numeric, categorical, or date
+
+<br>
+
+### 👀 View — Browse & Explore
+A full interactive data table powered by **DT**.
+
+- Sort, filter, and search across all columns simultaneously
+- Pagination for large datasets
+- Stays in sync with every downstream wrangling step
+
+<br>
+
+### 🛠️ Wrangle — Visual Transformation Pipeline
+Build a reproducible data pipeline by stacking operations — no `dplyr` knowledge needed.
+
+| Operation | What it does |
+|---|---|
+| **Filter** | Keep rows matching a condition |
+| **Select** | Keep or drop columns |
+| **Rename** | Give columns cleaner names |
+| **Mutate** | Create new calculated columns |
+| **Arrange** | Sort rows by any variable |
+| **Group & Summarize** | Aggregate statistics by group |
+| **Pivot Longer / Wider** | Reshape between formats |
+| **Distinct** | Remove duplicate rows |
+| **Sample** | Take a random sample |
+| **Replace NA** | Fill missing values |
+
+> Every step is tracked. **Download the full pipeline as a ready-to-run R script** so your analysis is always reproducible.
+
+<br>
+
+### 📈 Plot — Publication-Quality Visualizations
+A full ggplot2 builder in your browser, with optional Plotly interactivity.
+
+- **Plot types:** scatter, line, bar, box, violin, histogram, density, and more
+- **Aesthetics:** map any variable to x, y, color, fill, size, shape, facet
+- **Themes:** choose from ggplot2's built-in themes
+- **Color palettes:** Viridis, ColorBrewer, or pick manually
+- **Labels & titles:** fully customizable
+- **Export:** download as **PNG** or **interactive HTML**
+
+<br>
+
+### 📐 Stats — Statistical Analysis & Reporting
+Go beyond visualization with built-in statistical tools.
+
+- **Correlation matrix** with a color-coded heatmap (ggcorrplot)
+- **Linear regression** — select predictors and response, get a full model summary
+- **Diagnostic plots** — residuals, QQ, leverage, and more
+- **Automated plain-language reports** powered by the `report` package
+
+---
+
+## 📦 Built-in Datasets
+
+No data file? No problem. QuickPlot ships with four classic datasets to explore immediately.
+
+| Dataset | Rows | Description |
+|---|:---:|---|
+| `iris` | 150 | Fisher's famous flower measurements — a classic for classification |
+| `gapminder` | 1,704 | Country-level life expectancy, GDP, and population from 1952–2007 |
+| `palmerpenguins` | 344 | Penguin measurements from Palmer Station, Antarctica |
+| `mtcars` | 32 | Motor Trend car road tests — fuel efficiency and engine specs |
+
+---
+
+## 🔄 Workflow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│   1. LOAD          Upload CSV/Excel/TSV                 │
+│                    — or pick a built-in dataset —       │
+│                              │                          │
+│   2. EXPLORE       Overview tab → data profile          │
+│                    View tab   → browse rows             │
+│                              │                          │
+│   3. WRANGLE       Stack operations visually            │
+│                    Preview changes in real time         │
+│                    Export pipeline as R script          │
+│                              │                          │
+│   4. VISUALIZE     Choose plot type & map variables     │
+│                    Customize colors, themes, labels     │
+│                    Download PNG or interactive HTML     │
+│                              │                          │
+│   5. ANALYZE       Correlation matrix & heatmap         │
+│                    Linear regression + diagnostics      │
+│                    Generate automated plain-text report │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🛠️ Technology Stack
+
+<div align="center">
+
+| Layer | Technology |
+|---|---|
+| **Language** | R (≥ 4.0) |
+| **Web framework** | [Shiny](https://shiny.posit.co/) |
+| **Data manipulation** | [tidyverse](https://www.tidyverse.org/) — dplyr, tidyr, readr, and friends |
+| **Static visualizations** | [ggplot2](https://ggplot2.tidyverse.org/) |
+| **Interactive charts** | [Plotly for R](https://plotly.com/r/) |
+| **Interactive tables** | [DT](https://rstudio.github.io/DT/) |
+| **Correlation plots** | [ggcorrplot](https://github.com/kassambara/ggcorrplot) |
+| **Statistical modeling** | [broom](https://broom.tidymodels.org/), [report](https://easystats.github.io/report/) |
+| **File I/O** | readxl, janitor, lubridate |
+| **UI theming** | [shinythemes](https://rstudio.github.io/shinythemes/) + custom CSS |
+| **Drag-and-drop UI** | [sortable](https://rstudio.github.io/sortable/) |
+| **Cloud deployment** | [shinyapps.io](https://www.shinyapps.io/) |
+| **CI/CD** | GitHub Actions |
+
+</div>
+
+---
+
+## 🚀 Getting Started
+
+### Option 1 — Use the Live App (Zero Setup)
+
+Open **[https://noahweidig.shinyapps.io/quickplot/](https://noahweidig.shinyapps.io/quickplot/)** in any modern browser. Nothing to install.
+
+<br>
+
+### Option 2 — Run Locally
+
+**Prerequisites:** R ≥ 4.0 and RStudio (recommended)
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/noahweidig/quickplot.git
+cd quickplot
+```
+
+**2. Install dependencies** *(run once inside R)*
+```r
+install.packages(c(
+  "shiny", "shinythemes",
+  "tidyverse", "readxl", "janitor", "lubridate",
+  "gapminder", "palmerpenguins",
+  "plotly", "DT", "sortable", "ggcorrplot",
+  "broom", "report", "RColorBrewer", "scales"
+))
+```
+
+**3. Launch the app**
+```r
+shiny::runApp("app")
+```
+
+The app opens automatically in your default browser at `http://localhost:<port>`.
+
+---
+
+## 📁 Project Structure
+
+```
+quickplot/
+│
+├── app/
+│   ├── app.R              # Complete Shiny application (~3,400 lines)
+│   └── DESCRIPTION        # Package metadata & dependency declarations
+│
+├── docs/
+│   └── index.html         # GitHub Pages landing page
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml     # Automated deployment to shinyapps.io
+│
+├── benchmark_debounce.r   # Performance benchmarking script
+└── README.md
+```
+
+---
+
+## ☁️ Deployment
+
+The app deploys automatically to **shinyapps.io** on every push to `main` via GitHub Actions.
+
+**How it works:**
+1. GitHub Actions spins up an R environment
+2. All 21 dependencies are installed
+3. `rsconnect::deployApp()` pushes the app to shinyapps.io
+
+**To deploy your own fork**, add these three secrets under
+*Settings → Secrets and variables → Actions*:
+
+| Secret | Where to find it |
+|---|---|
+| `SHINYAPPS_NAME` | Your shinyapps.io account username |
+| `SHINYAPPS_TOKEN` | [shinyapps.io dashboard → Tokens](https://www.shinyapps.io/admin/#/tokens) |
+| `SHINYAPPS_SECRET` | Same page as the token |
+
+---
+
+## 🤝 Contributing
+
+Contributions are warmly welcome! Here's how to get started:
+
+```bash
+# 1. Fork and clone
+git clone https://github.com/<your-username>/quickplot.git
+
+# 2. Create a feature branch
+git checkout -b feature/your-idea
+
+# 3. Make your changes, then commit
+git commit -m "feat: describe your change"
+
+# 4. Push and open a Pull Request
+git push origin feature/your-idea
+```
+
+**Ideas for contributions:**
+- Additional plot types or geoms
+- More statistical tests (ANOVA, t-test, chi-square)
+- Extra data export formats (JSON, Parquet)
+- Improved mobile layout
+- Tutorials or example datasets
+- Internationalization / translations
+
+---
+
+## 👤 Author
+
+<div align="center">
+
+**Noah Weidig**
+
+[![Website](https://img.shields.io/badge/Website-noahweidig.com-008080?style=flat&logo=safari&logoColor=white)](https://noahweidig.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-noahweidig-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/noahweidig/)
+[![GitHub](https://img.shields.io/badge/GitHub-noahweidig-181717?style=flat&logo=github&logoColor=white)](https://github.com/noahweidig)
+
+</div>
+
+---
+
+<div align="center">
+
+Built with R, Shiny, and a healthy obsession with making data science accessible.
+
+**If QuickPlot saves you time, a ⭐ on GitHub means a lot — thank you!**
+
+<br>
+
+*Licensed under the [MIT License](https://opensource.org/licenses/MIT)*
+
+</div>

@@ -1,0 +1,31 @@
+Type: Package
+Package: QuickPlot
+Title: QuickPlot Shiny App
+Version: 0.1.0
+Authors@R: person("Noah", "Weidig", email = "noah@example.com", role = c("aut", "cre"))
+Description: A Shiny application for data wrangling and visualization.
+License: MIT
+Imports:
+    shiny,
+    shinythemes,
+    ggplot2,
+    dplyr,
+    tidyr,
+    readr,
+    purrr,
+    tibble,
+    stringr,
+    readxl,
+    janitor,
+    gapminder,
+    palmerpenguins,
+    scales,
+    lubridate,
+    plotly,
+    DT,
+    sortable,
+    ggcorrplot,
+    broom,
+    report,
+    RColorBrewer
+Encoding: UTF-8
