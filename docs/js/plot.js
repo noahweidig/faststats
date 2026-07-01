@@ -133,7 +133,7 @@ export async function renderPlot(store) {
         </details>
       </div>
       <div class="plot-main">
-        <div id="plot-container" class="plot-box"></div>
+        <div class="plot-card"><div id="plot-container" class="plot-box"></div></div>
       </div>
     </div>`;
 
