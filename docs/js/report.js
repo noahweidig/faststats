@@ -1,0 +1,236 @@
+/* ── FastStats · report.js ── Result formatting, copy/paste & report builder ──
+ *
+ * A single place that turns a structured result ({ title, tables[], interp })
+ * into HTML, plain text and Markdown, provides a reusable copy/report toolbar,
+ * and collects items into an exportable report (standalone HTML / Markdown / print).
+ */
+import { $, el, escapeHtml, copyToClipboard, showToast, downloadText } from './utils.js';
+
+/* ── Report store ── */
+const items = [];               // { id, kind, title, html, text, md, ts }
+const listeners = new Set();
+let seq = 0;
+
+export function onReportChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
+function notify() { listeners.forEach(fn => { try { fn(items); } catch {} }); updateBadge(); }
+
+export function getReportItems() { return items; }
+export function reportCount() { return items.length; }
+
+export function addReportItem({ kind = 'stat', title, html, text = '', md = '' }) {
+  items.push({ id: `r${++seq}`, kind, title: title || 'Untitled', html, text, md, ts: Date.now() });
+  notify();
+  showToast('Added to report ✓');
+}
+export function removeReportItem(id) {
+  const i = items.findIndex(x => x.id === id);
+  if (i !== -1) { items.splice(i, 1); notify(); }
+}
+export function moveReportItem(id, dir) {
+  const i = items.findIndex(x => x.id === id);
+  const j = i + dir;
+  if (i === -1 || j < 0 || j >= items.length) return;
+  [items[i], items[j]] = [items[j], items[i]];
+  notify();
+}
+export function clearReport() { items.length = 0; notify(); }
+
+function updateBadge() {
+  const b = $('#report-count-badge');
+  if (b) { b.textContent = items.length; b.style.display = items.length ? 'inline-flex' : 'none'; }
+}
+
+/* ── Result composition: structured → { html, text, md } ── */
+/* result = { title, tables:[{caption?, head:[], rows:[[]], align?:[]}], interp?, notes?:[] } */
+export function composeResult(res) {
+  const { title, tables = [], interp = '', notes = [] } = res;
+  let html = `<div class="stat-result-card"><div class="stat-card-head"><h4>${escapeHtml(title)}</h4></div>`;
+  let text = `${title}\n${'='.repeat(title.length)}\n`;
+  let md = `### ${title}\n\n`;
+
+  for (const t of tables) {
+    if (t.caption) { html += `<h5 class="stat-subhead">${escapeHtml(t.caption)}</h5>`; text += `\n${t.caption}\n`; md += `**${t.caption}**\n\n`; }
+    html += renderHtmlTable(t.head, t.rows);
+    text += textTable(t.head, t.rows) + '\n';
+    md += mdTable(t.head, t.rows) + '\n';
+  }
+  for (const n of notes) { html += `<p class="stat-note">${escapeHtml(n)}</p>`; text += `\n${n}\n`; md += `\n${n}\n`; }
+  if (interp) { html += `<p class="stat-interpretation">${escapeHtml(interp)}</p>`; text += `\n${interp}\n`; md += `\n> ${interp}\n`; }
+  html += '</div>';
+  return { title, html, text, md };
+}
+
+function renderHtmlTable(head, rows) {
+  let h = '<table class="data-table"><thead><tr>';
+  head.forEach((c, i) => { h += `<th${i ? ' class="num"' : ''}>${escapeHtml(String(c))}</th>`; });
+  h += '</tr></thead><tbody>';
+  for (const row of rows) {
+    h += '<tr>';
+    row.forEach((c, i) => { h += `<td${i ? ' class="num"' : ''}>${escapeHtml(String(c))}</td>`; });
+    h += '</tr>';
+  }
+  return h + '</tbody></table>';
+}
+
+function colWidths(head, rows) {
+  return head.map((h, i) => Math.max(String(h).length, ...rows.map(r => String(r[i] ?? '').length)));
+}
+function textTable(head, rows) {
+  const w = colWidths(head, rows);
+  const pad = (s, i) => (i === 0 ? String(s).padEnd(w[i]) : String(s).padStart(w[i]));
+  const line = arr => arr.map((c, i) => pad(c, i)).join('  ');
+  const sep = w.map(x => '-'.repeat(x)).join('  ');
+  return [line(head), sep, ...rows.map(line)].join('\n');
+}
+function mdTable(head, rows) {
+  const esc = s => String(s).replace(/\|/g, '\\|');
+  const h = `| ${head.map(esc).join(' | ')} |`;
+  const sep = `| ${head.map((_, i) => (i ? '---:' : '---')).join(' | ')} |`;
+  const body = rows.map(r => `| ${r.map(esc).join(' | ')} |`).join('\n');
+  return `${h}\n${sep}\n${body}`;
+}
+
+/* ── Reusable copy / add-to-report toolbar ── */
+export function resultToolbar(result, { kind = 'stat' } = {}) {
+  const bar = el('div', { className: 'result-toolbar' });
+  const mkBtn = (label, fn) => el('button', { className: 'btn btn-ghost btn-xs', onClick: fn }, label);
+  bar.append(
+    mkBtn('Copy text 📋', async () => { await copyToClipboard(result.text); showToast('Copied as text'); }),
+    mkBtn('Copy Markdown ⬇', async () => { await copyToClipboard(result.md); showToast('Copied as Markdown'); }),
+    mkBtn('Add to report ＋', () => addReportItem({ kind, title: result.title, html: result.html, text: result.text, md: result.md }))
+  );
+  return bar;
+}
+
+/* Render a composed result plus toolbar into a container element (returns node). */
+export function renderResultInto(container, result, opts = {}) {
+  const wrap = el('div', { className: 'result-block' });
+  wrap.innerHTML = result.html;
+  wrap.append(resultToolbar(result, opts));
+  container.append(wrap);
+  return wrap;
+}
+
+/* ── Report tab ── */
+export function renderReport(store) {
+  const container = $('#tab-report');
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="report-head">
+      <div>
+        <h3 class="section-title" style="margin:0">Report builder</h3>
+        <p class="help-text" style="margin:.25rem 0 0">Collect stats results and plots, then export a shareable document.</p>
+      </div>
+      <div class="report-actions">
+        <button id="report-copy-md" class="btn btn-secondary btn-sm">Copy all (Markdown)</button>
+        <button id="report-dl-md" class="btn btn-secondary btn-sm">Download .md</button>
+        <button id="report-dl-html" class="btn btn-primary btn-sm">Download HTML</button>
+        <button id="report-print" class="btn btn-secondary btn-sm">Print / PDF 🖨</button>
+        <button id="report-clear" class="btn btn-danger btn-sm">Clear</button>
+      </div>
+    </div>
+    <div class="form-group report-meta">
+      <input type="text" id="report-title-input" class="form-input" placeholder="Report title (optional)" value="">
+    </div>
+    <div id="report-list" class="report-list"></div>
+  `;
+
+  const listEl = $('#report-list');
+  const draw = () => drawList(listEl);
+  draw();
+  const off = onReportChange(draw);
+  // Re-bind cleanup on next render is unnecessary (idempotent); listeners are a Set.
+
+  $('#report-clear')?.addEventListener('click', () => {
+    if (items.length && confirm('Remove all report items?')) clearReport();
+  });
+  $('#report-copy-md')?.addEventListener('click', async () => {
+    if (!items.length) return showToast('Report is empty', 'error');
+    await copyToClipboard(buildMarkdown()); showToast('Report copied as Markdown');
+  });
+  $('#report-dl-md')?.addEventListener('click', () => {
+    if (!items.length) return showToast('Report is empty', 'error');
+    downloadText(buildMarkdown(), `faststats_report_${stamp()}.md`, 'text/markdown');
+  });
+  $('#report-dl-html')?.addEventListener('click', () => {
+    if (!items.length) return showToast('Report is empty', 'error');
+    downloadText(buildHtml(), `faststats_report_${stamp()}.html`, 'text/html');
+  });
+  $('#report-print')?.addEventListener('click', () => {
+    if (!items.length) return showToast('Report is empty', 'error');
+    printReport();
+  });
+}
+
+function reportTitle() { return ($('#report-title-input')?.value || '').trim() || 'FastStats Report'; }
+function stamp() { return new Date().toISOString().slice(0, 10); }
+
+function drawList(listEl) {
+  if (!listEl) return;
+  if (!items.length) {
+    listEl.innerHTML = `<div class="empty-state"><p>No items yet. Use <strong>Add to report ＋</strong> on any stats result or plot to collect it here.</p></div>`;
+    return;
+  }
+  listEl.innerHTML = '';
+  items.forEach((it, i) => {
+    const card = el('div', { className: 'report-item' });
+    const head = el('div', { className: 'report-item-head' }, [
+      el('span', { className: 'report-item-kind' }, it.kind === 'plot' ? '📈' : '📐'),
+      el('span', { className: 'report-item-title' }, it.title),
+      el('div', { className: 'report-item-tools' }, [
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move up', onClick: () => moveReportItem(it.id, -1) }, '↑'),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move down', onClick: () => moveReportItem(it.id, 1) }, '↓'),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Remove', onClick: () => removeReportItem(it.id) }, '✕'),
+      ])
+    ]);
+    const body = el('div', { className: 'report-item-body' });
+    body.innerHTML = it.html;
+    card.append(head, body);
+    listEl.append(card);
+  });
+}
+
+function buildMarkdown() {
+  const head = `# ${reportTitle()}\n\n_Generated by FastStats · ${new Date().toLocaleString()}_\n\n`;
+  return head + items.map(it => it.md || `### ${it.title}\n`).join('\n\n---\n\n') + '\n';
+}
+
+function buildHtml() {
+  const body = items.map(it => `<section class="ri">${it.html}</section>`).join('\n');
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(reportTitle())}</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{font-family:-apple-system,Segoe UI,Roboto,Inter,sans-serif;max-width:920px;margin:2rem auto;padding:0 1.25rem;color:#0f172a;background:#fff;line-height:1.5}
+h1{font-size:1.9rem;margin:0 0 .25rem}
+h4{margin:.2rem 0 .6rem;font-size:1.15rem}
+h5{margin:.8rem 0 .3rem;color:#334155}
+.meta{color:#64748b;font-size:.9rem;margin-bottom:1.5rem}
+.ri{border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem;margin:0 0 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+table{border-collapse:collapse;width:100%;margin:.5rem 0;font-size:.92rem}
+th,td{border:1px solid #e2e8f0;padding:.4rem .6rem;text-align:left}
+th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
+thead th{background:#f1f5f9}
+img{max-width:100%;height:auto;border-radius:8px}
+.stat-interpretation{background:#f0f9ff;border-left:3px solid #0ea5e9;padding:.5rem .75rem;border-radius:6px;margin:.6rem 0 0}
+.stat-note{color:#475569;font-size:.88rem}
+footer{color:#94a3b8;font-size:.8rem;margin-top:2rem;text-align:center}
+@media print{.ri{break-inside:avoid;box-shadow:none}}
+</style></head><body>
+<h1>${escapeHtml(reportTitle())}</h1>
+<div class="meta">Generated by FastStats · ${escapeHtml(new Date().toLocaleString())}</div>
+${body}
+<footer>Built with FastStats — 100% client-side analytics</footer>
+</body></html>`;
+}
+
+function printReport() {
+  const w = window.open('', '_blank');
+  if (!w) { showToast('Popup blocked — allow popups to print', 'error'); return; }
+  w.document.write(buildHtml());
+  w.document.close();
+  setTimeout(() => { w.focus(); w.print(); }, 300);
+}
