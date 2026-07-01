@@ -15,7 +15,7 @@ export function createGrid(container, { columns, rows, pageSize = 50 } = {}) {
   container.classList.add('fs-grid');
 
   const toolbar = el('div', { className: 'fs-grid-toolbar' });
-  const search = el('input', { type: 'search', className: 'fs-grid-search', placeholder: '🔍 Filter rows…' });
+  const search = el('input', { type: 'search', className: 'fs-grid-search', placeholder: 'Filter rows…' });
   const info = el('div', { className: 'fs-grid-info' });
   toolbar.append(search, info);
 

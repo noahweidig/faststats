@@ -6,6 +6,7 @@
  */
 import { $, el, escapeHtml, copyToClipboard, showToast, downloadText, debounce } from './utils.js';
 import { loadMarked } from './lazy.js';
+import { icon } from './icons.js';
 
 /* ── Report store ── */
 const items = [];               // { id, kind, title, html, text, md, ts }
@@ -21,7 +22,7 @@ export function reportCount() { return items.length; }
 export function addReportItem({ kind = 'stat', title, html, text = '', md = '' }) {
   items.push({ id: `r${++seq}`, kind, title: title || 'Untitled', html, text, md, ts: Date.now() });
   notify();
-  showToast('Added to report ✓');
+  showToast('Added to report');
 }
 export function removeReportItem(id) {
   const i = items.findIndex(x => x.id === id);
@@ -102,9 +103,9 @@ export function resultToolbar(result, { kind = 'stat' } = {}) {
   const bar = el('div', { className: 'result-toolbar' });
   const mkBtn = (label, fn) => el('button', { className: 'btn btn-ghost btn-xs', onClick: fn }, label);
   bar.append(
-    mkBtn('Copy text 📋', async () => { await copyToClipboard(result.text); showToast('Copied as text'); }),
-    mkBtn('Copy Markdown ⬇', async () => { await copyToClipboard(result.md); showToast('Copied as Markdown'); }),
-    mkBtn('Add to report ＋', () => addReportItem({ kind, title: result.title, html: result.html, text: result.text, md: result.md }))
+    mkBtn('Copy text', async () => { await copyToClipboard(result.text); showToast('Copied as text'); }),
+    mkBtn('Copy Markdown', async () => { await copyToClipboard(result.md); showToast('Copied as Markdown'); }),
+    mkBtn('Add to report', () => addReportItem({ kind, title: result.title, html: result.html, text: result.text, md: result.md }))
   );
   return bar;
 }
@@ -130,11 +131,11 @@ export function renderReport(store) {
         <p class="help-text" style="margin:.25rem 0 0">Collect stats results and plots, then export a shareable document.</p>
       </div>
       <div class="report-actions">
-        <button id="report-add-md" class="btn btn-secondary btn-sm">Add Markdown block ＋</button>
+        <button id="report-add-md" class="btn btn-secondary btn-sm">Add Markdown block</button>
         <button id="report-copy-md" class="btn btn-secondary btn-sm">Copy all (Markdown)</button>
         <button id="report-dl-md" class="btn btn-secondary btn-sm">Download .md</button>
         <button id="report-dl-html" class="btn btn-primary btn-sm">Download HTML</button>
-        <button id="report-print" class="btn btn-secondary btn-sm">Print / PDF 🖨</button>
+        <button id="report-print" class="btn btn-secondary btn-sm">Print / PDF</button>
         <button id="report-clear" class="btn btn-danger btn-sm">Clear</button>
       </div>
     </div>
@@ -178,20 +179,20 @@ function stamp() { return new Date().toISOString().slice(0, 10); }
 function drawList(listEl) {
   if (!listEl) return;
   if (!items.length) {
-    listEl.innerHTML = `<div class="empty-state"><p>No items yet. Use <strong>Add to report ＋</strong> on any stats result or plot to collect it here.</p></div>`;
+    listEl.innerHTML = `<div class="empty-state"><p>No items yet. Use <strong>Add to report</strong> on any stats result or plot to collect it here.</p></div>`;
     return;
   }
   listEl.innerHTML = '';
   items.forEach((it, i) => {
     const card = el('div', { className: 'report-item' });
-    const kindIcon = it.kind === 'plot' ? '📈' : it.kind === 'markdown' ? '📝' : '📐';
+    const kindIcon = icon(it.kind === 'plot' ? 'chart' : it.kind === 'markdown' ? 'markdown' : 'ruler');
     const head = el('div', { className: 'report-item-head' }, [
-      el('span', { className: 'report-item-kind' }, kindIcon),
+      el('span', { className: 'report-item-kind', innerHTML: kindIcon }),
       el('span', { className: 'report-item-title' }, it.kind === 'markdown' ? 'Markdown block' : it.title),
       el('div', { className: 'report-item-tools' }, [
-        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move up', onClick: () => moveReportItem(it.id, -1) }, '↑'),
-        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move down', onClick: () => moveReportItem(it.id, 1) }, '↓'),
-        el('button', { className: 'btn btn-ghost btn-xs', title: 'Remove', onClick: () => removeReportItem(it.id) }, '✕'),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move up', 'aria-label': 'Move up', innerHTML: icon('arrowUp'), onClick: () => moveReportItem(it.id, -1) }),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Move down', 'aria-label': 'Move down', innerHTML: icon('arrowDown'), onClick: () => moveReportItem(it.id, 1) }),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Remove', 'aria-label': 'Remove', innerHTML: icon('x'), onClick: () => removeReportItem(it.id) }),
       ])
     ]);
     const body = el('div', { className: 'report-item-body' });
@@ -243,21 +244,21 @@ function buildHtml() {
 <style>
 :root{color-scheme:light}
 *{box-sizing:border-box}
-body{font-family:-apple-system,Segoe UI,Roboto,Inter,sans-serif;max-width:920px;margin:2rem auto;padding:0 1.25rem;color:#0f172a;background:#fff;line-height:1.5}
-h1{font-size:1.9rem;margin:0 0 .25rem}
-h4{margin:.2rem 0 .6rem;font-size:1.15rem}
-h5{margin:.8rem 0 .3rem;color:#334155}
-.meta{color:#64748b;font-size:.9rem;margin-bottom:1.5rem}
-.ri{border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem;margin:0 0 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-table{border-collapse:collapse;width:100%;margin:.5rem 0;font-size:.92rem}
-th,td{border:1px solid #e2e8f0;padding:.4rem .6rem;text-align:left}
+body{font-family:-apple-system,Segoe UI,Roboto,Inter,sans-serif;max-width:920px;margin:2rem auto;padding:0 1.25rem;color:#0f172a;background:#fff;line-height:1.5;font-size:14px}
+h1{font-size:1.5rem;margin:0 0 .25rem}
+h4{margin:.2rem 0 .6rem;font-size:1.05rem}
+h5{margin:.8rem 0 .3rem;color:#334155;font-size:.92rem}
+.meta{color:#64748b;font-size:.85rem;margin-bottom:1.5rem}
+.ri{border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.25rem;margin:0 0 1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.05);overflow-x:auto}
+table{border-collapse:collapse;width:100%;margin:.5rem 0;font-size:.85rem}
+th,td{border:1px solid #e2e8f0;padding:.35rem .55rem;text-align:left;overflow-wrap:break-word}
 th.num,td.num{text-align:right;font-variant-numeric:tabular-nums}
 thead th{background:#f1f5f9}
 img{max-width:100%;height:auto;border-radius:8px}
 .stat-interpretation{background:#f0f9ff;border-left:3px solid #0ea5e9;padding:.5rem .75rem;border-radius:6px;margin:.6rem 0 0}
 .stat-note{color:#475569;font-size:.88rem}
 .md-block h1,.md-block h2,.md-block h3,.md-block h4,.md-block h5,.md-block h6{font-weight:700;margin:.9em 0 .4em;line-height:1.3}
-.md-block h1{font-size:1.7rem}.md-block h2{font-size:1.4rem}.md-block h3{font-size:1.2rem}.md-block h4{font-size:1.05rem}
+.md-block h1{font-size:1.35rem}.md-block h2{font-size:1.2rem}.md-block h3{font-size:1.08rem}.md-block h4{font-size:1rem}
 .md-block :first-child{margin-top:0}
 .md-block p{margin:.6em 0}
 .md-block a{color:#4f46e5}
@@ -267,7 +268,17 @@ img{max-width:100%;height:auto;border-radius:8px}
 .md-block pre{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.75em 1em;overflow-x:auto}
 .md-block pre code{background:none;padding:0}
 .md-block hr{border:none;border-top:1px solid #e2e8f0;margin:1em 0}
-@media print{.ri{break-inside:avoid;box-shadow:none}}
+@page{margin:14mm}
+@media print{
+body{margin:0;padding:0;max-width:100%;font-size:10.5pt}
+h1{font-size:15pt}h4{font-size:11.5pt}h5{font-size:10pt}
+.ri{break-inside:avoid;box-shadow:none;overflow:visible}
+table{font-size:8.5pt;table-layout:fixed;word-break:break-word}
+th,td{padding:.25rem .4rem}
+pre,code{white-space:pre-wrap;word-break:break-word}
+.md-block pre{overflow:visible}
+img{max-width:100%!important;height:auto!important}
+}
 </style></head><body>
 <h1>${escapeHtml(reportTitle())}</h1>
 <div class="meta">${escapeHtml(new Date().toLocaleString())}</div>

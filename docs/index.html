@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FastStats — Client-Side Data Analytics</title>
   <meta name="description" content="FastStats is a blazing-fast, browser-based data analytics tool. Upload your data, wrangle, visualize, run statistics, and build reports — all client-side, powered by a pure-JS engine and Plotly.js.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z'/%3E%3C/svg%3E">
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
@@ -34,7 +34,7 @@
     <header class="app-header">
       <div class="header-top">
         <a class="logo" href="#" aria-label="FastStats Home">
-          <span class="logo-icon" aria-hidden="true">⚡</span>
+          <span class="logo-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg></span>
           <span class="gradient-text">FastStats</span>
         </a>
         <div class="external-links">
@@ -59,7 +59,8 @@
       <div class="upload-bar-inner">
         <div class="upload-group">
           <label class="upload-label" id="upload-trigger">
-            📁 Upload CSV / Excel
+            <svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+            Upload CSV / Excel
             <input type="file" id="file-upload" accept=".csv,.tsv,.xlsx,.xls">
           </label>
           <label class="header-check-label">
@@ -92,27 +93,27 @@
       <!-- Sidebar navigation -->
       <nav class="sidebar-nav" aria-label="Main navigation">
         <button class="nav-tab active" data-tab="overview">
-          <span class="tab-icon" aria-hidden="true">🧭</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
           <span>Overview</span>
         </button>
         <button class="nav-tab" data-tab="view">
-          <span class="tab-icon" aria-hidden="true">👀</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg></span>
           <span>View</span>
         </button>
         <button class="nav-tab" data-tab="wrangle">
-          <span class="tab-icon" aria-hidden="true">🛠️</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>
           <span>Wrangle</span>
         </button>
         <button class="nav-tab" data-tab="plot">
-          <span class="tab-icon" aria-hidden="true">📈</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
           <span>Plot</span>
         </button>
         <button class="nav-tab" data-tab="stats">
-          <span class="tab-icon" aria-hidden="true">📐</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 8.7 15.3 2.7a1 1 0 0 0-1.4 0l-11.2 11.2a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11.2-11.2a1 1 0 0 0 0-1.4z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/></svg></span>
           <span>Stats</span>
         </button>
         <button class="nav-tab" data-tab="report">
-          <span class="tab-icon" aria-hidden="true">📄</span>
+          <span class="tab-icon" aria-hidden="true"><svg class="fs-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
           <span>Report</span>
           <span id="report-count-badge" class="nav-badge" style="display:none">0</span>
         </button>
@@ -142,7 +143,7 @@
     setTimeout(function () {
       var o = document.getElementById('loading-overlay');
       if (o && getComputedStyle(o).display !== 'none' && !o.querySelector('.loader-error')) {
-        o.innerHTML = '<div class="loader-error"><p><strong>⚠ FastStats could not start</strong></p>'
+        o.innerHTML = '<div class="loader-error"><p><strong>FastStats could not start</strong></p>'
           + '<p class="muted">The app scripts failed to load. Check your connection and reload.</p>'
           + '<button class="btn btn-primary btn-sm" onclick="location.reload()">Reload</button></div>';
       }

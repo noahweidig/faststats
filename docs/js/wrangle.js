@@ -46,13 +46,13 @@ export async function renderWrangle(store) {
           <select id="wrangle-add-type" class="form-select">
             ${STEP_TYPES.map(t => `<option value="${t.value}">${t.label}</option>`).join('')}
           </select>
-          <button id="wrangle-add-btn" class="btn btn-primary btn-sm">Add step ➕</button>
+          <button id="wrangle-add-btn" class="btn btn-primary btn-sm">Add step</button>
         </div>
         <div id="wrangle-steps-list" class="wrangle-steps-list"></div>
         <div id="wrangle-actions" class="wrangle-actions" style="display:none">
-          <button id="wrangle-remove-btn" class="btn btn-danger btn-sm">Remove step 🗑️</button>
-          <button id="wrangle-download-btn" class="btn btn-secondary btn-sm">Download CSV 📥</button>
-          <button id="wrangle-sql-btn" class="btn btn-secondary btn-sm">View recipe 🧾</button>
+          <button id="wrangle-remove-btn" class="btn btn-danger btn-sm">Remove step</button>
+          <button id="wrangle-download-btn" class="btn btn-secondary btn-sm">Download CSV</button>
+          <button id="wrangle-sql-btn" class="btn btn-secondary btn-sm">View recipe</button>
         </div>
         <div id="wrangle-status"></div>
       </div>
@@ -334,11 +334,11 @@ function updatePreview(store) {
 
     if (statusDiv) {
       statusDiv.innerHTML = steps.length > 0
-        ? `<div class="status-success">✓ Applied ${steps.length} step(s)</div>`
+        ? `<div class="status-success">Applied ${steps.length} step(s)</div>`
         : '';
     }
   } catch (err) {
-    if (statusDiv) statusDiv.innerHTML = `<div class="status-error">⚠ ${escapeHtml(err.message)}</div>`;
+    if (statusDiv) statusDiv.innerHTML = `<div class="status-error">${escapeHtml(err.message)}</div>`;
     console.error('[Wrangle]', err);
   }
 }
@@ -358,7 +358,7 @@ function showRecipeModal() {
   const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', onClick: async () => {
     await copyToClipboard(recipe);
     showToast('Copied!');
-  }}, 'Copy to clipboard 📋');
+  }}, 'Copy to clipboard');
   const content = el('div', {}, [
     el('p', {}, 'Human-readable recipe of the wrangling steps:'),
     copyBtn, pre
