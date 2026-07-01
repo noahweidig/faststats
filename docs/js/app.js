@@ -1,5 +1,4 @@
 /* ── FastStats · app.js ── Main orchestrator ── */
-import { initDB } from './db.js';
 import { SAMPLE_DATASETS, loadSampleDataset, loadUploadedFile, getDatasetInfo } from './data.js';
 import { createStore, $, $$, el, populateSelect, showToast } from './utils.js';
 import { renderOverview } from './overview.js';
@@ -20,18 +19,32 @@ const TAB_IDS = ['overview', 'view', 'wrangle', 'plot', 'stats'];
 async function init() {
   showLoading(true);
   try {
-    await initDB();
     initTabs();
     initUpload();
     initDatasetSelector();
-    // Load default dataset
+    // Load default dataset (pure-JS engine — no async init needed)
     await switchDataset('iris');
-    showLoading(false);
   } catch (err) {
     console.error('[FastStats] Init error:', err);
+    showInitError(err);
+  } finally {
+    // Always clear the overlay — never leave the app stuck on "Initializing".
     showLoading(false);
-    showToast('Failed to initialize: ' + err.message, 'error', 5000);
   }
+}
+
+function showInitError(err) {
+  const loader = $('#loading-overlay');
+  if (loader) {
+    loader.innerHTML = `
+      <div class="loader-error">
+        <p><strong>⚠ Failed to load FastStats</strong></p>
+        <p class="muted">${err.message}</p>
+        <button class="btn btn-primary btn-sm" onclick="location.reload()">Reload</button>
+      </div>`;
+    loader.style.display = 'flex';
+  }
+  showToast('Failed to initialize: ' + err.message, 'error', 5000);
 }
 
 function initTabs() {

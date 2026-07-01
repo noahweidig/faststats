@@ -1,6 +1,6 @@
 /* ── FastStats · data.js ── Dataset loading & management ── */
-import { loadCSVFile, loadCSVFromURL, loadCSVString, getSchema, getRowCount, getColCount, query } from './db.js';
-import { el } from './utils.js';
+import { loadCSVFromURL, loadCSVString, setTable, getSchema, getRowCount, getColumnValues as engineColumnValues } from './engine.js';
+import { loadSheetJS } from './lazy.js';
 
 export const SAMPLE_DATASETS = {
   iris: {
@@ -30,42 +30,29 @@ export const SAMPLE_DATASETS = {
 };
 
 const TABLE_NAME = 'active_data';
-const WRANGLED_TABLE = 'wrangled_data';
 
 export function getTableName() { return TABLE_NAME; }
-export function getWrangledTableName() { return WRANGLED_TABLE; }
 
 export async function loadSampleDataset(id) {
   const ds = SAMPLE_DATASETS[id];
   if (!ds) throw new Error(`Unknown sample dataset: ${id}`);
-  await loadCSVFromURL(ds.file, TABLE_NAME);
-  return {
-    id, name: ds.name, description: ds.description,
-    sourceType: 'sample'
-  };
+  await loadCSVFromURL(ds.file, TABLE_NAME, { header: true });
+  return { id, name: ds.name, description: ds.description, sourceType: 'sample' };
 }
 
 export async function loadUploadedFile(file, hasHeader = true) {
-  const text = await file.text();
   const ext = file.name.split('.').pop().toLowerCase();
 
   if (ext === 'xlsx' || ext === 'xls') {
-    // Use SheetJS if available
-    if (typeof XLSX === 'undefined') throw new Error('Excel support requires SheetJS library');
+    const XLSX = await loadSheetJS();
     const data = new Uint8Array(await file.arrayBuffer());
     const wb = XLSX.read(data, { type: 'array' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const csv = XLSX.utils.sheet_to_csv(ws);
-    await loadCSVString(csv, TABLE_NAME);
+    loadCSVString(csv, TABLE_NAME, { header: hasHeader });
   } else {
-    // CSV/TSV — detect delimiter
-    const firstLine = text.split('\n')[0];
-    let csvText = text;
-    if (firstLine.includes('\t') && !firstLine.includes(',')) {
-      // Convert TSV to CSV via DuckDB's native parsing
-      // DuckDB read_csv_auto handles this
-    }
-    await loadCSVString(csvText, TABLE_NAME);
+    const text = await file.text();
+    loadCSVString(text, TABLE_NAME, { header: hasHeader });
   }
 
   return {
@@ -76,8 +63,8 @@ export async function loadUploadedFile(file, hasHeader = true) {
 }
 
 export async function getDatasetInfo(meta) {
-  const schema = await getSchema(TABLE_NAME);
-  const rowCount = await getRowCount(TABLE_NAME);
+  const schema = getSchema(TABLE_NAME);
+  const rowCount = getRowCount(TABLE_NAME);
   const colCount = schema.length;
   const numericCols = schema.filter(s => s.isNumeric).map(s => s.name);
   const categoricalCols = schema.filter(s => s.isCategorical).map(s => s.name);
@@ -85,7 +72,6 @@ export async function getDatasetInfo(meta) {
   return { ...meta, schema, rowCount, colCount, numericCols, categoricalCols, dateCols, allCols: schema.map(s => s.name) };
 }
 
-export async function getColumnValues(tableName, colName, limit = 1000) {
-  const rows = await query(`SELECT DISTINCT "${colName}" FROM "${tableName}" WHERE "${colName}" IS NOT NULL ORDER BY "${colName}" LIMIT ${limit}`);
-  return rows.map(r => r[colName]);
+export function getColumnValues(tableName, colName, limit = 1000) {
+  return engineColumnValues(tableName, colName, limit);
 }

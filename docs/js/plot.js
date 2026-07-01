@@ -1,8 +1,21 @@
 /* ── FastStats · plot.js ── Plotly.js visualizations ── */
-import { query, getSchema } from './db.js';
-import { getTableName, getWrangledTableName } from './data.js';
-import { buildPipelineSQL, getSteps } from './wrangle.js';
-import { $, el, escapeHtml, showModal, copyToClipboard, showToast, debounce } from './utils.js';
+import { getRows, getSchema } from './engine.js';
+import { getTableName } from './data.js';
+import { getWrangledFrame, getSteps } from './wrangle.js';
+import { loadPlotly } from './lazy.js';
+import { $, $$, el, escapeHtml, showModal, copyToClipboard, showToast, debounce } from './utils.js';
+
+/* Rows for plotting: wrangled frame when requested, else the active table. */
+function getPlotData() {
+  const useWrangled = $('#plot-use-wrangled')?.checked;
+  if (useWrangled && getSteps().length > 0) return getWrangledFrame().rows;
+  return getRows(getTableName());
+}
+function getPlotSchema() {
+  const useWrangled = $('#plot-use-wrangled')?.checked;
+  if (useWrangled && getSteps().length > 0) return getWrangledFrame().cols;
+  return getSchema(getTableName());
+}
 
 const PLOT_TYPES = [
   ['auto', 'Auto'], ['scatter', 'Scatter'], ['histogram', 'Histogram'],
@@ -126,22 +139,12 @@ export async function renderPlot(store) {
   debouncedBuild(store);
 }
 
-async function populateVarSelectors(store) {
+function populateVarSelectors(store) {
   const container = $('#plot-var-selectors');
   if (!container) return;
-  const useWrangled = $('#plot-use-wrangled')?.checked;
   let schema;
   try {
-    if (useWrangled && getSteps().length > 0) {
-      const sql = buildPipelineSQL();
-      const sample = await query(`${sql} LIMIT 1`);
-      schema = sample.length > 0 ? Object.keys(sample[0]).map(name => {
-        const val = sample[0][name];
-        return { name, isNumeric: typeof val === 'number', isCategorical: typeof val === 'string', isDate: false };
-      }) : [];
-    } else {
-      schema = await getSchema(getTableName());
-    }
+    schema = getPlotSchema();
   } catch { schema = store.get('datasetInfo')?.schema || []; }
 
   const allCols = schema.map(s => s.name);
@@ -207,25 +210,25 @@ function bindPlotEvents(store) {
     if (varsGroup) varsGroup.style.display = isCorr ? 'block' : 'none';
   });
 
-  $('#plot-download-png')?.addEventListener('click', () => {
-    Plotly.downloadImage('plot-container', { format: 'png', width: 1200, height: 800, filename: 'faststats_plot' });
+  $('#plot-download-png')?.addEventListener('click', async () => {
+    try {
+      const Plotly = await loadPlotly();
+      Plotly.downloadImage('plot-container', { format: 'png', width: 1200, height: 800, filename: 'faststats_plot' });
+    } catch (e) { showToast('Download failed: ' + e.message, 'error'); }
   });
 
   $('#plot-show-sql')?.addEventListener('click', () => {
-    const sql = getPlotDataSQL();
-    const pre = el('pre', { className: 'code-block' }, sql);
-    const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', onClick: async () => { await copyToClipboard(sql); showToast('Copied!'); }}, 'Copy 📋');
-    showModal('Plot Data SQL', el('div', {}, [el('p', {}, 'SQL query used to fetch the plot data:'), copyBtn, pre]));
+    const useWrangled = $('#plot-use-wrangled')?.checked && getSteps().length > 0;
+    const rows = getPlotData();
+    const cols = rows.length ? Object.keys(rows[0]).join(', ') : '(none)';
+    const text = `Source: ${useWrangled ? 'wrangled data (pipeline applied)' : 'original dataset'}\nRows: ${rows.length}\nColumns: ${cols}`;
+    const pre = el('pre', { className: 'code-block' }, text);
+    const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', onClick: async () => { await copyToClipboard(text); showToast('Copied!'); }}, 'Copy 📋');
+    showModal('Plot Data Source', el('div', {}, [copyBtn, pre]));
   });
 }
 
-function getPlotDataSQL() {
-  const useWrangled = $('#plot-use-wrangled')?.checked;
-  if (useWrangled && getSteps().length > 0) return buildPipelineSQL();
-  return `SELECT * FROM "${getTableName()}"`;
-}
-
-const debouncedBuild = debounce(async (store) => { await buildPlot(store); }, 200);
+const debouncedBuild = debounce((store) => buildPlot(store), 200);
 
 async function buildPlot(store) {
   const plotDiv = document.getElementById('plot-container');
@@ -252,12 +255,15 @@ async function buildPlot(store) {
   const manualColors = ($('#plot-manual-colors')?.value || '').split(',').map(s => s.trim()).filter(Boolean);
 
   try {
-    const sql = getPlotDataSQL();
-    const data = await query(`${sql}`);
+    const data = getPlotData();
     if (!data.length) { plotDiv.innerHTML = '<div class="empty-state"><p>No data available.</p></div>'; return; }
 
+    plotDiv.classList.add('plot-loading');
+    const Plotly = await loadPlotly();
+    plotDiv.classList.remove('plot-loading');
+
     if (plotType === 'corr_matrix') {
-      await buildCorrMatrix(plotDiv, data, store, themeName);
+      await buildCorrMatrix(Plotly, plotDiv, data, store, themeName);
       return;
     }
 
@@ -336,6 +342,7 @@ async function buildPlot(store) {
     Plotly.react(plotDiv, traces, layout, { responsive: true, displayModeBar: true });
 
   } catch (err) {
+    plotDiv.classList.remove('plot-loading');
     console.error('[Plot]', err);
     plotDiv.innerHTML = `<div class="empty-state"><p>Plot error: ${escapeHtml(err.message)}</p></div>`;
   }
@@ -438,7 +445,7 @@ function buildSmoothTrend(xVals, yVals) {
     line: { color: '#10b981', width: 2.5 }, showlegend: true };
 }
 
-async function buildCorrMatrix(plotDiv, data, store, themeName) {
+async function buildCorrMatrix(Plotly, plotDiv, data, store, themeName) {
   const checkboxes = $$('#plot-corr-vars input[type="checkbox"]:checked');
   let numCols = checkboxes.map(cb => cb.value);
   if (numCols.length < 2) {
