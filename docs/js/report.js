@@ -4,8 +4,8 @@
  * into HTML, plain text and Markdown, provides a reusable copy/report toolbar,
  * and collects items into an exportable report (standalone HTML / Markdown / print).
  */
-import { $, el, escapeHtml, copyToClipboard, showToast, downloadText, debounce } from './utils.js';
-import { loadMarked } from './lazy.js';
+import { $, el, escapeHtml, copyToClipboard, showToast, downloadText } from './utils.js';
+import { createMdEditor } from './md-editor.js';
 import { icon } from './icons.js';
 
 /* ── Report store ── */
@@ -38,8 +38,15 @@ export function moveReportItem(id, dir) {
 export function clearReport() { items.length = 0; notify(); }
 
 export function addMarkdownItem() {
-  const md = '## New section\n\nType Markdown here — **bold**, _italic_, lists, links, tables and more. It renders live, just like it will look in the exported report.';
-  items.push({ id: `r${++seq}`, kind: 'markdown', title: 'Markdown', html: '', text: md, md, ts: Date.now() });
+  const md = '## New section\n\nJust start typing — formatting is automatic. Try `# ` for a heading, `- ` for a list, `1. ` for numbering, or wrap words in **asterisks** for bold. You can also select text and use the toolbar.';
+  items.push({ id: `r${++seq}`, kind: 'markdown', title: 'Text', html: '', text: md, md, ts: Date.now() });
+  notify();
+}
+export function duplicateReportItem(id) {
+  const i = items.findIndex(x => x.id === id);
+  if (i === -1) return;
+  const src = items[i];
+  items.splice(i + 1, 0, { ...src, id: `r${++seq}`, ts: Date.now() });
   notify();
 }
 
@@ -188,10 +195,11 @@ function drawList(listEl) {
     const kindIcon = icon(it.kind === 'plot' ? 'chart' : it.kind === 'markdown' ? 'markdown' : 'ruler');
     const head = el('div', { className: 'report-item-head' }, [
       el('span', { className: 'report-item-kind', innerHTML: kindIcon }),
-      el('span', { className: 'report-item-title' }, it.kind === 'markdown' ? 'Markdown block' : it.title),
+      el('span', { className: 'report-item-title' }, it.kind === 'markdown' ? 'Text block' : it.title),
       el('div', { className: 'report-item-tools' }, [
         el('button', { className: 'btn btn-ghost btn-xs', title: 'Move up', 'aria-label': 'Move up', innerHTML: icon('arrowUp'), onClick: () => moveReportItem(it.id, -1) }),
         el('button', { className: 'btn btn-ghost btn-xs', title: 'Move down', 'aria-label': 'Move down', innerHTML: icon('arrowDown'), onClick: () => moveReportItem(it.id, 1) }),
+        el('button', { className: 'btn btn-ghost btn-xs', title: 'Duplicate', 'aria-label': 'Duplicate', innerHTML: icon('copy'), onClick: () => duplicateReportItem(it.id) }),
         el('button', { className: 'btn btn-ghost btn-xs', title: 'Remove', 'aria-label': 'Remove', innerHTML: icon('x'), onClick: () => removeReportItem(it.id) }),
       ])
     ]);
@@ -206,29 +214,10 @@ function drawList(listEl) {
   });
 }
 
-/* Markdown block: a textarea + a live rendered preview that updates as the user types,
-   so the report item always shows what it will look like in the export (not raw text). */
+/* Text block: WYSIWYG editor — Markdown auto-formats as you type (see md-editor.js).
+   The item's html/md/text stay in sync for export. */
 function renderMarkdownEditor(it, body) {
-  const wrap = el('div', { className: 'md-editor' });
-  const textarea = el('textarea', { className: 'md-editor-input' });
-  textarea.value = it.md;
-  const preview = el('div', { className: 'md-editor-preview' });
-  wrap.append(textarea, preview);
-  body.append(wrap);
-
-  const render = async () => {
-    try {
-      const marked = await loadMarked();
-      const html = marked.parse(it.md || '');
-      it.html = `<div class="md-block">${html}</div>`;
-      preview.innerHTML = html;
-    } catch (e) {
-      preview.innerHTML = `<p class="stat-note">Markdown preview unavailable: ${escapeHtml(e.message)}</p>`;
-    }
-  };
-  const onInput = debounce(() => { it.md = textarea.value; it.text = it.md; render(); }, 150);
-  textarea.addEventListener('input', onInput);
-  render();
+  createMdEditor(body, it);
 }
 
 function buildMarkdown() {
@@ -270,13 +259,18 @@ img{max-width:100%;height:auto;border-radius:8px}
 .md-block hr{border:none;border-top:1px solid #e2e8f0;margin:1em 0}
 @page{margin:14mm}
 @media print{
-body{margin:0;padding:0;max-width:100%;font-size:10.5pt}
-h1{font-size:15pt}h4{font-size:11.5pt}h5{font-size:10pt}
-.ri{break-inside:avoid;box-shadow:none;overflow:visible}
-table{font-size:8.5pt;table-layout:fixed;word-break:break-word}
-th,td{padding:.25rem .4rem}
-pre,code{white-space:pre-wrap;word-break:break-word}
+html{font-size:11px}
+body{margin:0;padding:0;max-width:100%;font-size:9.5pt;line-height:1.45}
+h1{font-size:14pt}h4{font-size:11pt}h5{font-size:9.5pt}
+.md-block h1{font-size:13pt}.md-block h2{font-size:11.5pt}.md-block h3{font-size:10.5pt}.md-block h4,.md-block h5,.md-block h6{font-size:9.5pt}
+.md-block p,.md-block li,.md-block blockquote{font-size:9.5pt}
+.meta{font-size:8pt}
+.ri{break-inside:avoid;box-shadow:none;overflow:visible;border:none;padding:.25rem 0}
+table{font-size:8pt;table-layout:fixed;word-break:break-word}
+th,td{padding:.2rem .35rem}
+pre,code{white-space:pre-wrap;word-break:break-word;font-size:8pt}
 .md-block pre{overflow:visible}
+.stat-interpretation,.stat-note{font-size:8.5pt}
 img{max-width:100%!important;height:auto!important}
 }
 </style></head><body>

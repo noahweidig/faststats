@@ -126,14 +126,13 @@ function updateSelectorUI(store) {
   if (!xGroup || !yGroup) return;
 
   const isCorr = test === 'corr_matrix';
-  xGroup.style.display = (isCorr || (Y_ONLY.has(test) && test !== 'descriptive')) ? 'none' : 'block';
-  yGroup.style.display = isCorr ? 'none' : 'block';
+  xGroup.style.display = (isCorr || Y_ONLY.has(test)) ? 'none' : 'block';
+  yGroup.style.display = (isCorr || test === 'descriptive') ? 'none' : 'block';
 
   // Relabel
   if (GROUP_TESTS.has(test)) { xLabel.textContent = 'Grouping variable (X)'; yLabel.textContent = 'Numeric value (Y)'; }
   else if (XY_NUM.has(test)) { xLabel.textContent = 'X (numeric)'; yLabel.textContent = 'Y (numeric)'; }
   else if (CAT_TESTS.has(test)) { xLabel.textContent = 'Variable 1 (X)'; yLabel.textContent = 'Variable 2 (Y)'; }
-  else if (test === 'descriptive') { xLabel.textContent = 'Group by (optional)'; yLabel.textContent = 'Numeric variable (Y)'; }
   else if (test === 'normality') { yLabel.textContent = 'Numeric variable (Y)'; }
   else if (test === 'one_sample_t') { yLabel.textContent = 'Numeric variable (Y)'; }
   else if (MULTI.has(test)) { yLabel.textContent = test === 'logistic' ? 'Binary response (Y)' : 'Response (Y, numeric)'; }
@@ -141,7 +140,17 @@ function updateSelectorUI(store) {
   // Extra controls
   const schema = getStatsSchema();
   const numCols = schema.filter(s => s.isNumeric).map(s => s.name);
-  if (test === 'one_sample_t') {
+  if (test === 'descriptive') {
+    const catCols = schema.filter(s => !s.isNumeric).map(s => s.name);
+    extra.innerHTML = `<div class="form-group"><label class="form-label">Variables (numeric)</label>
+      <div class="multi-select-container" id="stat-desc-vars">
+        ${numCols.map((c, i) => `<label class="multi-select-option"><input type="checkbox" value="${escapeHtml(c)}"${i === 0 ? ' checked' : ''}> ${escapeHtml(c)}</label>`).join('')}
+      </div></div>
+      <div class="form-group"><label class="form-label">Group by (optional — pick any number)</label>
+      <div class="multi-select-container" id="stat-desc-groups">
+        ${catCols.length ? catCols.map(c => `<label class="multi-select-option"><input type="checkbox" value="${escapeHtml(c)}"> ${escapeHtml(c)}</label>`).join('') : '<span class="help-text">No categorical columns</span>'}
+      </div></div>`;
+  } else if (test === 'one_sample_t') {
     extra.innerHTML = `<div class="form-group"><label class="form-label">Null mean (μ₀)</label><input type="number" id="stat-mu" class="form-input" value="0" step="any"></div>`;
   } else if (MULTI.has(test)) {
     extra.innerHTML = `<div class="form-group"><label class="form-label">Predictors (numeric)</label>
@@ -230,7 +239,7 @@ function flash(container, msg) {
 function dispatch(test, data, xCol, yCol) {
   const need = (...cols) => cols.every(Boolean);
   switch (test) {
-    case 'descriptive': return descriptive(data, yCol, xCol);
+    case 'descriptive': return descriptive(data);
     case 'normality': return normality(data, yCol);
     case 'one_sample_t': return oneSampleT(data, yCol, parseFloat($('#stat-mu')?.value || '0'));
     case 'unpaired_t': return need(xCol, yCol) ? unpairedT(data, xCol, yCol) : miss();
@@ -270,22 +279,42 @@ function groupNumeric(data, xCol, yCol) {
 
 /* ═══════════ Tests ═══════════ */
 
-function descriptive(data, yCol, groupCol) {
-  if (!yCol) return miss();
-  const head = ['Group', 'n', 'Mean', 'SD', 'SE', 'Min', 'Q1', 'Median', 'Q3', 'Max', 'Skew'];
+/* Descriptive stats: any number of numeric variables, grouped by any number of
+   categorical columns (cross-combinations). */
+function descriptive(data) {
+  const vars = getMulti('#stat-desc-vars');
+  const groups = getMulti('#stat-desc-groups');
+  if (!vars.length) return { error: 'Select at least one numeric variable.' };
+  const SEP = '\u0001';
+  const head = [...(vars.length > 1 ? ['Variable'] : []), ...groups, 'n', 'Mean', 'SD', 'SE', 'Min', 'Q1', 'Median', 'Q3', 'Max', 'Skew'];
   const rows = [];
-  const build = (label, v) => {
-    if (!v.length) return;
+  const cells = v => {
     const m = mean(v), sd = stddev(v);
-    rows.push([label, v.length, f(m), f(sd), f(sd / Math.sqrt(v.length)), f(Math.min(...v)),
-      f(quantile(v, .25)), f(quantile(v, .5)), f(quantile(v, .75)), f(Math.max(...v)), f(skewness(v))]);
+    return [v.length, f(m), f(sd), f(sd / Math.sqrt(v.length)), f(Math.min(...v)),
+      f(quantile(v, .25)), f(quantile(v, .5)), f(quantile(v, .75)), f(Math.max(...v)), f(skewness(v))];
   };
-  if (groupCol) {
-    const g = groupNumeric(data, groupCol, yCol);
-    Object.keys(g).sort().forEach(k => build(k, g[k]));
-  } else build('all', numVec(data, yCol));
-  if (!rows.length) return { error: 'No numeric data in the chosen column.' };
-  return composeResult({ title: `Descriptive statistics — ${yCol}`, tables: [{ head, rows }] });
+  for (const yc of vars) {
+    const label = vars.length > 1 ? [yc] : [];
+    if (groups.length) {
+      const map = new Map();
+      for (const r of data) {
+        if (groups.some(g => r[g] == null)) continue;
+        const v = Number(r[yc]);
+        if (isNaN(v)) continue;
+        const key = groups.map(g => String(r[g])).join(SEP);
+        let arr = map.get(key);
+        if (!arr) { arr = []; map.set(key, arr); }
+        arr.push(v);
+      }
+      [...map.keys()].sort().forEach(k => rows.push([...label, ...k.split(SEP), ...cells(map.get(k))]));
+    } else {
+      const v = numVec(data, yc);
+      if (v.length) rows.push([...label, ...cells(v)]);
+    }
+  }
+  if (!rows.length) return { error: 'No numeric data for the chosen selection.' };
+  const title = `Descriptive statistics — ${vars.join(', ')}${groups.length ? ` by ${groups.join(' × ')}` : ''}`;
+  return composeResult({ title, tables: [{ head, rows }] });
 }
 
 function normality(data, yCol) {
@@ -737,10 +766,10 @@ function crossTab(data, xCol, yCol) {
     if (r[xCol] == null || r[yCol] == null) continue;
     const x = String(r[xCol]), y = String(r[yCol]);
     xSet.add(x); ySet.add(y);
-    map.set(x + ' ' + y, (map.get(x + ' ' + y) || 0) + 1);
+    map.set(x + '\u0000' + y, (map.get(x + '\u0000' + y) || 0) + 1);
   }
   const xl = [...xSet].sort(), yl = [...ySet].sort();
-  const obs = xl.map(x => yl.map(y => map.get(x + ' ' + y) || 0));
+  const obs = xl.map(x => yl.map(y => map.get(x + '\u0000' + y) || 0));
   const rowT = obs.map(r => r.reduce((a, b) => a + b, 0));
   const colT = yl.map((_, j) => xl.reduce((s, __, i) => s + obs[i][j], 0));
   const N = rowT.reduce((a, b) => a + b, 0);

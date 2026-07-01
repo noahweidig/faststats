@@ -1,6 +1,7 @@
 /* ── FastStats · app.js ── Main orchestrator ── */
 import { SAMPLE_DATASETS, loadSampleDataset, loadUploadedFile, getDatasetInfo } from './data.js';
 import { createStore, $, $$, el, populateSelect, showToast } from './utils.js';
+import { icon } from './icons.js';
 import { renderOverview } from './overview.js';
 import { renderView } from './view.js';
 import { renderWrangle } from './wrangle.js';
@@ -20,8 +21,11 @@ const TAB_IDS = ['overview', 'view', 'wrangle', 'plot', 'stats', 'report'];
 async function init() {
   showLoading(true);
   try {
+    initTheme();
     initTabs();
     initUpload();
+    initDragDrop();
+    initShortcuts();
     initDatasetSelector();
     // Load default dataset (pure-JS engine — no async init needed)
     await switchDataset('iris');
@@ -46,6 +50,30 @@ function showInitError(err) {
     loader.style.display = 'flex';
   }
   showToast('Failed to initialize: ' + err.message, 'error', 5000);
+}
+
+/* ── Light / dark theme ── */
+function initTheme() {
+  const btn = $('#theme-toggle');
+  const setIcon = () => { if (btn) btn.innerHTML = icon(document.documentElement.getAttribute('data-theme') === 'light' ? 'moon' : 'sun'); };
+  setIcon();
+  btn?.addEventListener('click', async () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('fs-theme', next); } catch {}
+    setIcon();
+    // Re-render so theme-aware content (e.g. Plotly charts) picks up the new scheme
+    await renderActiveTab(store.get('activeTab'));
+  });
+}
+
+/* ── Keyboard shortcuts: Alt+1…6 switch tabs ── */
+function initShortcuts() {
+  document.addEventListener('keydown', e => {
+    if (!e.altKey || e.ctrlKey || e.metaKey) return;
+    const i = parseInt(e.key, 10) - 1;
+    if (i >= 0 && i < TAB_IDS.length) { e.preventDefault(); switchTab(TAB_IDS[i]); }
+  });
 }
 
 function initTabs() {
@@ -103,45 +131,63 @@ async function renderActiveTab(tab) {
   }
 }
 
-function initUpload() {
-  const fileInput = $('#file-upload');
-  const headerCheck = $('#header-check');
+async function loadFile(file) {
+  if (!file) return;
+  showLoading(true);
+  try {
+    const meta = await loadUploadedFile(file, $('#header-check')?.checked ?? true);
+    const info = await getDatasetInfo(meta);
+    store.batch({ datasetMeta: meta, datasetInfo: info });
 
-  if (fileInput) {
-    fileInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      showLoading(true);
-      try {
-        const meta = await loadUploadedFile(file, headerCheck?.checked ?? true);
-        const info = await getDatasetInfo(meta);
-        store.batch({ datasetMeta: meta, datasetInfo: info });
-
-        // Update selector to show uploaded file
-        const sel = $('#dataset-select');
-        if (sel) {
-          // Add upload option if not present
-          let uploadOpt = sel.querySelector('option[value="upload"]');
-          if (!uploadOpt) {
-            uploadOpt = el('option', { value: 'upload' }, `Uploaded: ${file.name}`);
-            sel.prepend(uploadOpt);
-          } else {
-            uploadOpt.textContent = `Uploaded: ${file.name}`;
-          }
-          sel.value = 'upload';
-        }
-
-        updateCurrentData(info);
-        showLoading(false);
-        await renderActiveTab(store.get('activeTab'));
-        showToast(`Loaded ${file.name}`, 'success');
-      } catch (err) {
-        showLoading(false);
-        showToast('Upload failed: ' + err.message, 'error');
-        console.error('[Upload]', err);
+    // Update selector to show uploaded file
+    const sel = $('#dataset-select');
+    if (sel) {
+      let uploadOpt = sel.querySelector('option[value="upload"]');
+      if (!uploadOpt) {
+        uploadOpt = el('option', { value: 'upload' }, `Uploaded: ${file.name}`);
+        sel.prepend(uploadOpt);
+      } else {
+        uploadOpt.textContent = `Uploaded: ${file.name}`;
       }
-    });
+      sel.value = 'upload';
+    }
+
+    updateCurrentData(info);
+    showLoading(false);
+    await renderActiveTab(store.get('activeTab'));
+    showToast(`Loaded ${file.name}`, 'success');
+  } catch (err) {
+    showLoading(false);
+    showToast('Upload failed: ' + err.message, 'error');
+    console.error('[Upload]', err);
   }
+}
+
+function initUpload() {
+  $('#file-upload')?.addEventListener('change', e => loadFile(e.target.files[0]));
+}
+
+/* Drag & drop a CSV / Excel file anywhere on the page to load it. */
+function initDragDrop() {
+  let overlay = null, depth = 0;
+  const hide = () => { depth = 0; overlay?.remove(); overlay = null; };
+  window.addEventListener('dragenter', e => {
+    if (![...(e.dataTransfer?.types || [])].includes('Files')) return;
+    e.preventDefault();
+    if (++depth === 1 && !overlay) {
+      overlay = el('div', { className: 'drop-overlay' }, 'Drop your CSV / Excel file to load it');
+      document.body.append(overlay);
+    }
+  });
+  window.addEventListener('dragover', e => { if (overlay) e.preventDefault(); });
+  window.addEventListener('dragleave', () => { if (overlay && --depth <= 0) hide(); });
+  window.addEventListener('drop', e => {
+    if (!overlay) return;
+    e.preventDefault();
+    const file = e.dataTransfer?.files?.[0];
+    hide();
+    if (file) loadFile(file);
+  });
 }
 
 function initDatasetSelector() {
