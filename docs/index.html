@@ -10,14 +10,8 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- AG Grid -->
-  <script src="https://cdn.jsdelivr.net/npm/ag-grid-community@33.2.5/dist/ag-grid-community.min.js"></script>
-
-  <!-- Plotly.js -->
-  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-
-  <!-- SheetJS (Excel support) -->
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <!-- Heavy libraries (Plotly, SheetJS) are lazy-loaded on demand by js/lazy.js
+       so the app paints instantly. The data engine is pure JS — no WASM. -->
 </head>
 <body>
   <!-- Background effects -->
@@ -135,14 +129,18 @@
     </footer>
   </div>
 
-  <!-- App entry point: uses importmap for DuckDB-WASM ESM -->
-  <script type="importmap">
-  {
-    "imports": {
-      "@duckdb/duckdb-wasm": "https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.29.0/dist/duckdb-browser.mjs"
-    }
-  }
-  </script>
+  <!-- App entry point (pure-JS ES modules) -->
   <script type="module" src="js/app.js"></script>
+  <!-- Failsafe: if module load itself fails, never leave the spinner forever. -->
+  <script>
+    setTimeout(function () {
+      var o = document.getElementById('loading-overlay');
+      if (o && getComputedStyle(o).display !== 'none' && !o.querySelector('.loader-error')) {
+        o.innerHTML = '<div class="loader-error"><p><strong>⚠ FastStats could not start</strong></p>'
+          + '<p class="muted">The app scripts failed to load. Check your connection and reload.</p>'
+          + '<button class="btn btn-primary btn-sm" onclick="location.reload()">Reload</button></div>';
+      }
+    }, 15000);
+  </script>
 </body>
 </html>

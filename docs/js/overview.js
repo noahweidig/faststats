@@ -54,7 +54,7 @@ export function renderOverview(store) {
           <li>Choose an <strong>Operation</strong> and click <strong>Add step ➕</strong>.</li>
           <li>Select any step to fine-tune settings and preview the results instantly.</li>
           <li>Drag to reorder steps and remove any step with the 🗑️ button.</li>
-          <li>Download the cleaned dataset or view the generated SQL.</li>
+          <li>Download the cleaned dataset or view the readable recipe.</li>
         </ul>
       `)}
       ${stepCard('📈', 'Step 4 — Visualize insights', `
@@ -77,7 +77,7 @@ export function renderOverview(store) {
       ${stepCard('💡', 'Helpful tips', `
         <ul>
           <li>All data processing happens in your browser — nothing leaves your machine.</li>
-          <li>DuckDB-WASM powers the SQL engine, handling datasets up to millions of rows.</li>
+          <li>A lightweight pure-JavaScript engine loads instantly — no multi-megabyte downloads.</li>
           <li>Use the download buttons across tabs to export data and charts.</li>
         </ul>
       `)}

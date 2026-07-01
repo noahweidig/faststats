@@ -1,8 +1,15 @@
 /* ── FastStats · stats.js ── Statistical analysis ── */
-import { query, getSchema } from './db.js';
+import { getRows, getSchema } from './engine.js';
 import { getTableName } from './data.js';
-import { buildPipelineSQL, getSteps } from './wrangle.js';
+import { getWrangledFrame, getSteps } from './wrangle.js';
 import { $, $$, el, escapeHtml, formatNumber, formatPValue, formatInteger, showModal, copyToClipboard, showToast, debounce } from './utils.js';
+
+/* Rows for analysis: wrangled frame when requested, else the active table. */
+function getStatsData() {
+  const useWrangled = $('#stat-use-wrangled')?.checked;
+  if (useWrangled && getSteps().length > 0) return getWrangledFrame().rows;
+  return getRows(getTableName());
+}
 
 const TESTS = [
   ['lm', 'Linear Regression'],
@@ -67,7 +74,7 @@ export async function renderStats(store) {
   updateGroupUI(store);
 }
 
-async function updateGroupUI(store) {
+function updateGroupUI(store) {
   const container = $('#stat-group-container');
   if (!container) return;
   const test = $('#stat-test')?.value;
@@ -78,15 +85,14 @@ async function updateGroupUI(store) {
   if (!needsGroups) { container.innerHTML = ''; return; }
 
   try {
-    const sql = getStatsSQL();
-    const levels = await query(`SELECT DISTINCT "${xCol}" as val FROM (${sql}) WHERE "${xCol}" IS NOT NULL ORDER BY val LIMIT 50`);
-    const vals = levels.map(r => r.val);
+    const rows = getStatsData();
+    // Skip grouping UI for numeric grouping columns
+    const firstVal = rows.find(r => r[xCol] != null)?.[xCol];
+    if (typeof firstVal === 'number') { container.innerHTML = ''; return; }
+    const seen = new Set();
+    for (const r of rows) { if (r[xCol] != null) seen.add(r[xCol]); if (seen.size > 50) break; }
+    const vals = [...seen].sort((a, b) => String(a).localeCompare(String(b)));
     if (vals.length < 2) { container.innerHTML = ''; return; }
-    // Check if the column is numeric
-    const sample = await query(`SELECT typeof("${xCol}") as t FROM (${sql}) LIMIT 1`);
-    if (sample[0]?.t?.includes('INT') || sample[0]?.t?.includes('FLOAT') || sample[0]?.t?.includes('DOUBLE')) {
-      container.innerHTML = ''; return;
-    }
 
     const maxItems = ['unpaired_t','mann_whitney'].includes(test) ? 2 : vals.length;
     const defaultSelected = vals.slice(0, maxItems);
@@ -102,17 +108,11 @@ async function updateGroupUI(store) {
   } catch { container.innerHTML = ''; }
 }
 
-function getStatsSQL() {
-  const useWrangled = $('#stat-use-wrangled')?.checked;
-  if (useWrangled && getSteps().length > 0) return buildPipelineSQL();
-  return `SELECT * FROM "${getTableName()}"`;
-}
-
 function getSelectedGroups() {
   return $$('#stat-groups input:checked').map(cb => cb.value);
 }
 
-async function runAnalysis(store) {
+function runAnalysis(store) {
   const results = $('#stat-results');
   if (!results) return;
 
@@ -125,16 +125,15 @@ async function runAnalysis(store) {
   }
 
   try {
-    let sql = getStatsSQL();
+    let data = getStatsData();
     const groups = getSelectedGroups();
 
-    // Filter by groups if applicable
+    // Filter by selected groups if applicable
     if (groups.length > 0 && ['anova','kruskal','unpaired_t','mann_whitney'].includes(test)) {
-      const inList = groups.map(g => `'${String(g).replace(/'/g, "''")}'`).join(',');
-      sql = `SELECT * FROM (${sql}) WHERE "${xCol}" IN (${inList})`;
+      const set = new Set(groups.map(String));
+      data = data.filter(r => set.has(String(r[xCol])));
     }
 
-    const data = await query(sql);
     if (data.length === 0) { results.innerHTML = '<div class="status-error">No data after filtering.</div>'; return; }
 
     const xVals = data.map(r => r[xCol]);
