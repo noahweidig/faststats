@@ -40,6 +40,9 @@ export async function renderPlot(store) {
   const info = store.get('datasetInfo');
   if (!info) { container.innerHTML = '<div class="empty-state"><p>No data loaded.</p></div>'; return; }
 
+  // Default the chart theme to the app's current light/dark scheme
+  const appLight = document.documentElement.getAttribute('data-theme') === 'light';
+
   container.innerHTML = `
     <div class="plot-layout">
       <div class="plot-sidebar">
@@ -103,7 +106,7 @@ export async function renderPlot(store) {
           <div class="form-group"><label class="form-label">Theme</label>
             <select id="plot-theme" class="form-select">
               <option value="classic">Classic</option><option value="minimal">Minimal</option>
-              <option value="light">Light</option><option value="dark" selected>Dark</option>
+              <option value="light"${appLight ? ' selected' : ''}>Light</option><option value="dark"${appLight ? '' : ' selected'}>Dark</option>
             </select></div>
           <div class="form-group"><label class="form-label">Palette</label>
             <select id="plot-palette" class="form-select">
