@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FastStats — Client-Side Data Analytics</title>
-  <meta name="description" content="FastStats is a blazing-fast, browser-based data analytics tool. Upload your data, wrangle, visualize, and analyze — all client-side with DuckDB-WASM and Plotly.js.">
+  <meta name="description" content="FastStats is a blazing-fast, browser-based data analytics tool. Upload your data, wrangle, visualize, run statistics, and build reports — all client-side, powered by a pure-JS engine and Plotly.js.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 
   <!-- Styles -->
@@ -111,6 +111,11 @@
           <span class="tab-icon" aria-hidden="true">📐</span>
           <span>Stats</span>
         </button>
+        <button class="nav-tab" data-tab="report">
+          <span class="tab-icon" aria-hidden="true">📄</span>
+          <span>Report</span>
+          <span id="report-count-badge" class="nav-badge" style="display:none">0</span>
+        </button>
       </nav>
 
       <!-- Main content area -->
@@ -120,12 +125,13 @@
         <div id="tab-wrangle" style="display:none"></div>
         <div id="tab-plot" style="display:none"></div>
         <div id="tab-stats" style="display:none"></div>
+        <div id="tab-report" style="display:none"></div>
       </main>
     </div>
 
     <!-- Footer -->
     <footer class="app-footer">
-      Built by <a href="https://noahweidig.com" target="_blank" rel="noopener noreferrer">Noah Weidig</a> · Powered by DuckDB-WASM &amp; Plotly.js · 100% client-side
+      Built by <a href="https://noahweidig.com" target="_blank" rel="noopener noreferrer">Noah Weidig</a> · Pure-JS engine &amp; Plotly.js · 100% client-side
     </footer>
   </div>
 

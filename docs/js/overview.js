@@ -60,25 +60,35 @@ export function renderOverview(store) {
       ${stepCard('📈', 'Step 4 — Visualize insights', `
         <p>Head over to the <strong>📈 Plot</strong> tab and bring your story to life.</p>
         <ul>
-          <li>Choose whether to use the original data or your wrangled version.</li>
-          <li>Map variables, pick a plot type, and refine aesthetics.</li>
-          <li>Try different color palettes and themes.</li>
-          <li>Hover, zoom, and download interactive graphics powered by Plotly.</li>
+          <li>Pick from scatter, line, area, histogram, density, ECDF, box, violin, bar, pie, 2D‑density and correlation matrix.</li>
+          <li>Split into small multiples with <strong>Facets</strong> — with shared or free Y scales.</li>
+          <li>Fine‑tune log axes, gridlines, markers, palettes, themes, trendlines and titles.</li>
+          <li>Export as PNG/SVG, download the plotted data, or push the chart into your report.</li>
         </ul>
       `)}
-      ${stepCard('📐', 'Step 5 — Analyze and report', `
-        <p>Dive into the <strong>📐 Stats</strong> tab to run quick models and tests.</p>
+      ${stepCard('📐', 'Step 5 — Run statistics', `
+        <p>Dive into the <strong>📐 Stats</strong> tab for 20+ analyses.</p>
         <ul>
-          <li>Choose numeric or categorical variables to run the appropriate statistical test.</li>
-          <li>View structured results with test statistics, p-values, and confidence intervals.</li>
-          <li>Compare groups with ANOVA, t-tests, and non-parametric alternatives.</li>
+          <li>Descriptives, normality, t‑tests, ANOVA + Tukey HSD, Kruskal‑Wallis, Mann‑Whitney, Levene, F‑test.</li>
+          <li>Correlation (Pearson/Spearman), linear, multiple and logistic regression.</li>
+          <li>Chi‑squared, Fisher exact, two‑proportion z — with effect sizes and confidence intervals.</li>
+          <li>Every result has one‑click <strong>Copy as text / Markdown</strong> for instant paste.</li>
+        </ul>
+      `)}
+      ${stepCard('📄', 'Step 6 — Build a report', `
+        <p>Collect results in the <strong>📄 Report</strong> tab and share them.</p>
+        <ul>
+          <li>Use <strong>Add to report ＋</strong> on any stats result or plot to stack it here.</li>
+          <li>Reorder items, then export a self‑contained <strong>HTML</strong> or <strong>Markdown</strong> file.</li>
+          <li>Print straight to PDF — no accounts, no uploads, entirely in your browser.</li>
         </ul>
       `)}
       ${stepCard('💡', 'Helpful tips', `
         <ul>
           <li>All data processing happens in your browser — nothing leaves your machine.</li>
           <li>A lightweight pure-JavaScript engine loads instantly — no multi-megabyte downloads.</li>
-          <li>Use the download buttons across tabs to export data and charts.</li>
+          <li>Missing values written as <code>NA</code>, <code>null</code> or <code>.</code> are detected automatically.</li>
+          <li>Use the download buttons across tabs to export data, charts and full reports.</li>
         </ul>
       `)}
     </div>

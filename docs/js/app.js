@@ -6,6 +6,7 @@ import { renderView } from './view.js';
 import { renderWrangle } from './wrangle.js';
 import { renderPlot } from './plot.js';
 import { renderStats } from './stats.js';
+import { renderReport } from './report.js';
 
 const store = createStore({
   activeTab: 'overview',
@@ -14,7 +15,7 @@ const store = createStore({
   loading: true
 });
 
-const TAB_IDS = ['overview', 'view', 'wrangle', 'plot', 'stats'];
+const TAB_IDS = ['overview', 'view', 'wrangle', 'plot', 'stats', 'report'];
 
 async function init() {
   showLoading(true);
@@ -95,6 +96,7 @@ async function renderActiveTab(tab) {
       case 'wrangle': await renderWrangle(store); break;
       case 'plot': await renderPlot(store); break;
       case 'stats': await renderStats(store); break;
+      case 'report': renderReport(store); break;
     }
   } catch (err) {
     console.error(`[${tab}] render error:`, err);

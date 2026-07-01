@@ -75,6 +75,8 @@ export function parseCSV(text, { header = true, delimiter = null } = {}) {
 
 const NUM_RE = /^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?$/;
+// Tokens treated as missing everywhere (must match `coerce` below).
+const MISSING = new Set(['', 'NA', 'N/A', 'na', 'null', 'NULL', 'NaN', '.', '-']);
 
 function buildFrame(names, rawRows) {
   const nCols = names.length;
@@ -83,9 +85,10 @@ function buildFrame(names, rawRows) {
     let numeric = true, date = true, seen = 0;
     for (let r = 0; r < rawRows.length && seen < 500; r++) {
       const cell = rawRows[r][c];
-      if (cell == null || cell === '') continue;
-      seen++;
+      if (cell == null) continue;
       const s = cell.trim();
+      if (MISSING.has(s)) continue;
+      seen++;
       if (numeric && !NUM_RE.test(s)) numeric = false;
       if (date && !DATE_RE.test(s)) date = false;
       if (!numeric && !date) break;
@@ -111,7 +114,7 @@ function buildFrame(names, rawRows) {
 function coerce(cell, type) {
   if (cell == null) return null;
   const s = typeof cell === 'string' ? cell.trim() : cell;
-  if (s === '' || s === 'NA' || s === 'null' || s === 'NaN') return null;
+  if (typeof s === 'string' && MISSING.has(s)) return null;
   if (type === 'number') { const n = Number(s); return isNaN(n) ? null : n; }
   return String(s);
 }
