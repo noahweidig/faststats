@@ -33,3 +33,11 @@ export async function loadSheetJS() {
   if (!window.XLSX) throw new Error('SheetJS failed to initialize');
   return window.XLSX;
 }
+
+export async function loadMarked() {
+  if (window.marked) return window.marked;
+  await loadScript('https://cdn.jsdelivr.net/npm/marked/marked.min.js');
+  if (!window.marked) throw new Error('marked failed to initialize');
+  window.marked.setOptions({ breaks: true, gfm: true });
+  return window.marked;
+}

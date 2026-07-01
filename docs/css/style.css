@@ -787,12 +787,20 @@ body {
 
 .plot-main { min-width: 0; }
 
-.plot-box {
+.plot-card {
   background: var(--bg-glass);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 0.75rem;
   min-height: 500px;
+  display: flex;
+  overflow: hidden;
+}
+
+.plot-box {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
 }
 
 .plot-actions {
@@ -1053,7 +1061,7 @@ body {
 
 @media (max-width: 600px) {
   .main-panel { padding: 1rem; }
-  .plot-box { min-height: 350px; }
+  .plot-card { min-height: 350px; }
 }
 
 /* ── Scrollbar ── */
@@ -1126,3 +1134,68 @@ body {
 .report-item-body { padding: 1rem 1.25rem; overflow-x: auto; }
 .report-item-body h4 { color: var(--text-accent); font-size: 0.9rem; margin: 0 0 0.5rem; }
 .report-item-body img { max-width: 100%; border-radius: var(--radius-sm); }
+
+/* Markdown block editor: raw source (left) + live rendered preview (right),
+   so the report always shows formatted output, not literal Markdown text. */
+.md-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+.md-editor-input {
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  color: var(--text-primary);
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.md-editor-input:focus { outline: none; border-color: var(--border-accent); }
+.md-editor-preview {
+  min-height: 160px;
+  padding: 0.75rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  color: var(--text-primary);
+}
+@media (max-width: 900px) { .md-editor { grid-template-columns: 1fr; } }
+
+.md-editor-preview h1, .md-editor-preview h2, .md-editor-preview h3,
+.md-editor-preview h4, .md-editor-preview h5, .md-editor-preview h6,
+.md-block h1, .md-block h2, .md-block h3, .md-block h4, .md-block h5, .md-block h6 {
+  color: var(--text-primary); font-weight: 700; margin: 0.9em 0 0.4em; line-height: 1.3;
+}
+.md-editor-preview h1, .md-block h1 { font-size: 1.7rem; }
+.md-editor-preview h2, .md-block h2 { font-size: 1.4rem; }
+.md-editor-preview h3, .md-block h3 { font-size: 1.2rem; }
+.md-editor-preview h4, .md-block h4 { font-size: 1.05rem; color: var(--text-primary); }
+.md-editor-preview :first-child, .md-block :first-child { margin-top: 0; }
+.md-editor-preview p, .md-block p { margin: 0.6em 0; line-height: 1.6; }
+.md-editor-preview strong, .md-block strong { font-weight: 700; color: var(--text-primary); }
+.md-editor-preview em, .md-block em { font-style: italic; }
+.md-editor-preview a, .md-block a { color: var(--text-accent); text-decoration: underline; }
+.md-editor-preview ul, .md-editor-preview ol, .md-block ul, .md-block ol { margin: 0.5em 0; padding-left: 1.5em; }
+.md-editor-preview li, .md-block li { margin: 0.2em 0; line-height: 1.5; }
+.md-editor-preview blockquote, .md-block blockquote {
+  margin: 0.6em 0; padding: 0.3em 1em; border-left: 3px solid var(--accent-secondary);
+  color: var(--text-secondary); background: rgba(14,165,233,0.08); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.md-editor-preview code, .md-block code {
+  font-family: 'SF Mono', Menlo, Consolas, monospace; font-size: 0.85em;
+  background: rgba(148,163,184,0.15); padding: 0.15em 0.4em; border-radius: 4px;
+}
+.md-editor-preview pre, .md-block pre {
+  background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+  padding: 0.75em 1em; overflow-x: auto; margin: 0.6em 0;
+}
+.md-editor-preview pre code, .md-block pre code { background: none; padding: 0; }
+.md-editor-preview hr, .md-block hr { border: none; border-top: 1px solid var(--border-medium); margin: 1em 0; }
+.md-editor-preview table, .md-block table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.88rem; }
+.md-editor-preview th, .md-editor-preview td, .md-block th, .md-block td {
+  border: 1px solid var(--border-subtle); padding: 0.4em 0.6em; text-align: left;
+}
+.md-editor-preview thead th, .md-block thead th { background: var(--bg-elevated); }
+.md-editor-preview img, .md-block img { max-width: 100%; border-radius: var(--radius-sm); }
