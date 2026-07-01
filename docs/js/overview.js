@@ -1,5 +1,6 @@
 /* ── FastStats · overview.js ── Overview tab ── */
 import { el, $, commaFormat } from './utils.js';
+import { icon } from './icons.js';
 
 export function renderOverview(store) {
   const container = $('#tab-overview');
@@ -13,7 +14,7 @@ export function renderOverview(store) {
 
   container.innerHTML = `
     <div class="overview-highlight">
-      <span class="highlight-icon">⚡</span>
+      <span class="highlight-icon">${icon('zap')}</span>
       <div>
         <strong>Welcome to FastStats!</strong>
         <p>Upload a dataset above or explore one of the built-in sample datasets to get started.</p>
@@ -21,7 +22,7 @@ export function renderOverview(store) {
     </div>
 
     <div class="card overview-dataset-card">
-      <h3><span aria-hidden="true">📄</span> Active Dataset</h3>
+      <h3>${icon('file')} Active Dataset</h3>
       <div class="dataset-info">
         <p class="dataset-name">${esc(name)}</p>
         ${desc ? `<p class="dataset-description">${esc(desc)}</p>` : ''}
@@ -31,7 +32,7 @@ export function renderOverview(store) {
     </div>
 
     <div class="overview-steps">
-      ${stepCard('🗂️', 'Step 1 — Upload or select your data', `
+      ${stepCard('folder', 'Step 1 — Upload or select your data', `
         <p>Use the upload controls at the top of the page to bring in your file.</p>
         <ul>
           <li>Click <strong>Upload CSV/Excel</strong> to choose a .csv, .tsv, or Excel file.</li>
@@ -40,25 +41,25 @@ export function renderOverview(store) {
         </ul>
         <p>No file yet? The classic <code>iris</code> dataset loads automatically, or pick another sample from the dropdown.</p>
       `)}
-      ${stepCard('👀', 'Step 2 — Preview and validate', `
-        <p>Switch to the <strong>👀 View</strong> tab to inspect your data.</p>
+      ${stepCard('eye', 'Step 2 — Preview and validate', `
+        <p>Switch to the <strong>View</strong> tab to inspect your data.</p>
         <ul>
           <li>Scroll through the interactive preview table to spot issues fast.</li>
           <li>Check summary tables for quick stats on numeric and categorical columns.</li>
           <li>Use built-in search and sorting in the data grid.</li>
         </ul>
       `)}
-      ${stepCard('🛠️', 'Step 3 — Build your wrangling recipe', `
-        <p>Visit the <strong>🛠️ Wrangle</strong> tab to craft a clean data pipeline.</p>
+      ${stepCard('wrench', 'Step 3 — Build your wrangling recipe', `
+        <p>Visit the <strong>Wrangle</strong> tab to craft a clean data pipeline.</p>
         <ul>
-          <li>Choose an <strong>Operation</strong> and click <strong>Add step ➕</strong>.</li>
+          <li>Choose an <strong>Operation</strong> and click <strong>Add step</strong>.</li>
           <li>Select any step to fine-tune settings and preview the results instantly.</li>
-          <li>Drag to reorder steps and remove any step with the 🗑️ button.</li>
+          <li>Drag to reorder steps and remove any step with the trash button.</li>
           <li>Download the cleaned dataset or view the readable recipe.</li>
         </ul>
       `)}
-      ${stepCard('📈', 'Step 4 — Visualize insights', `
-        <p>Head over to the <strong>📈 Plot</strong> tab and bring your story to life.</p>
+      ${stepCard('chart', 'Step 4 — Visualize insights', `
+        <p>Head over to the <strong>Plot</strong> tab and bring your story to life.</p>
         <ul>
           <li>Pick from scatter, line, area, histogram, density, ECDF, box, violin, bar, pie, 2D‑density and correlation matrix.</li>
           <li>Split into small multiples with <strong>Facets</strong> — with shared or free Y scales.</li>
@@ -66,8 +67,8 @@ export function renderOverview(store) {
           <li>Export as PNG/SVG, download the plotted data, or push the chart into your report.</li>
         </ul>
       `)}
-      ${stepCard('📐', 'Step 5 — Run statistics', `
-        <p>Dive into the <strong>📐 Stats</strong> tab for 20+ analyses.</p>
+      ${stepCard('ruler', 'Step 5 — Run statistics', `
+        <p>Dive into the <strong>Stats</strong> tab for 20+ analyses.</p>
         <ul>
           <li>Descriptives, normality, t‑tests, ANOVA + Tukey HSD, Kruskal‑Wallis, Mann‑Whitney, Levene, F‑test.</li>
           <li>Correlation (Pearson/Spearman), linear, multiple and logistic regression.</li>
@@ -75,15 +76,15 @@ export function renderOverview(store) {
           <li>Every result has one‑click <strong>Copy as text / Markdown</strong> for instant paste.</li>
         </ul>
       `)}
-      ${stepCard('📄', 'Step 6 — Build a report', `
-        <p>Collect results in the <strong>📄 Report</strong> tab and share them.</p>
+      ${stepCard('file', 'Step 6 — Build a report', `
+        <p>Collect results in the <strong>Report</strong> tab and share them.</p>
         <ul>
-          <li>Use <strong>Add to report ＋</strong> on any stats result or plot to stack it here.</li>
+          <li>Use <strong>Add to report</strong> on any stats result or plot to stack it here.</li>
           <li>Reorder items, then export a self‑contained <strong>HTML</strong> or <strong>Markdown</strong> file.</li>
           <li>Print straight to PDF — no accounts, no uploads, entirely in your browser.</li>
         </ul>
       `)}
-      ${stepCard('💡', 'Helpful tips', `
+      ${stepCard('lightbulb', 'Helpful tips', `
         <ul>
           <li>All data processing happens in your browser — nothing leaves your machine.</li>
           <li>A lightweight pure-JavaScript engine loads instantly — no multi-megabyte downloads.</li>
@@ -118,10 +119,10 @@ function renderColumnSummary(info) {
   return html;
 }
 
-function stepCard(icon, title, content) {
+function stepCard(iconName, title, content) {
   return `
     <div class="card step-card">
-      <h3><span aria-hidden="true">${icon}</span> ${title}</h3>
+      <h3>${icon(iconName)} ${title}</h3>
       ${content}
     </div>
   `;

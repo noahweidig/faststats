@@ -39,7 +39,7 @@ function showInitError(err) {
   if (loader) {
     loader.innerHTML = `
       <div class="loader-error">
-        <p><strong>⚠ Failed to load FastStats</strong></p>
+        <p><strong>Failed to load FastStats</strong></p>
         <p class="muted">${err.message}</p>
         <button class="btn btn-primary btn-sm" onclick="location.reload()">Reload</button>
       </div>`;

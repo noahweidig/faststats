@@ -125,10 +125,10 @@ export async function renderPlot(store) {
             <input type="number" id="plot-dl-height" class="form-input" value="800" title="Height px">
           </div>
           <div class="plot-actions">
-            <button id="plot-download" class="btn btn-secondary btn-sm">Download image 📥</button>
-            <button id="plot-add-report" class="btn btn-secondary btn-sm">Add to report ＋</button>
+            <button id="plot-download" class="btn btn-secondary btn-sm">Download image</button>
+            <button id="plot-add-report" class="btn btn-secondary btn-sm">Add to report</button>
             <button id="plot-download-data" class="btn btn-ghost btn-sm">Download data CSV</button>
-            <button id="plot-show-data" class="btn btn-ghost btn-sm">Data source 🧾</button>
+            <button id="plot-show-data" class="btn btn-ghost btn-sm">Data source</button>
           </div>
         </details>
       </div>
@@ -220,7 +220,7 @@ function bindPlotEvents(store) {
     const cols = rows.length ? Object.keys(rows[0]).join(', ') : '(none)';
     const text = `Source: ${usingWrangled() ? 'wrangled data (pipeline applied)' : 'original dataset'}\nRows: ${rows.length}\nColumns: ${cols}`;
     const pre = el('pre', { className: 'code-block' }, text);
-    const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', onClick: async () => { await copyToClipboard(text); showToast('Copied!'); } }, 'Copy 📋');
+    const copyBtn = el('button', { className: 'btn btn-secondary btn-sm', onClick: async () => { await copyToClipboard(text); showToast('Copied!'); } }, 'Copy');
     showModal('Plot Data Source', el('div', {}, [copyBtn, pre]));
   });
 }

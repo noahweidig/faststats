@@ -1,4 +1,6 @@
 /* ── FastStats · utils.js ── */
+import { icon } from './icons.js';
+
 export function el(tag, attrs = {}, children = []) {
   const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
@@ -105,7 +107,7 @@ export function showModal(title, contentEl, { footer = null, size = 'lg' } = {})
   const modal = el('div', { className: `modal-dialog modal-${size}` });
   const header = el('div', { className: 'modal-header' }, [
     el('h3', { className: 'modal-title' }, title),
-    el('button', { className: 'modal-close', 'aria-label': 'Close', onClick: () => overlay.remove() }, '✕')
+    el('button', { className: 'modal-close', 'aria-label': 'Close', innerHTML: icon('x'), onClick: () => overlay.remove() })
   ]);
   const body = el('div', { className: 'modal-body' });
   if (typeof contentEl === 'string') body.innerHTML = contentEl;

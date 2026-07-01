@@ -78,14 +78,14 @@ export async function renderStats(store) {
         </div>
         <div id="stat-extra"></div>
         <div id="stat-group-container"></div>
-        <button id="stat-run" class="btn btn-primary" style="width:100%;margin-top:.5rem">Run analysis ▶</button>
+        <button id="stat-run" class="btn btn-primary" style="width:100%;margin-top:.5rem">Run analysis</button>
         <button id="stat-report" class="btn btn-secondary btn-sm" style="width:100%;margin-top:.4rem" title="Send latest result to the Report tab">Add all results to report</button>
       </div>
       <div class="stats-main">
         <div class="stats-main-head">
           <h3 class="section-title" style="margin:0">Results</h3>
           <div class="stats-main-tools">
-            <button id="stat-copy-all" class="btn btn-ghost btn-xs">Copy all 📋</button>
+            <button id="stat-copy-all" class="btn btn-ghost btn-xs">Copy all</button>
             <button id="stat-clear" class="btn btn-ghost btn-xs">Clear</button>
           </div>
         </div>
@@ -316,7 +316,7 @@ function normality(data, yCol) {
       ['n', n], ['Skewness', f(g1)], ['Excess kurtosis', f(g2)],
       ['K² (omnibus)', f(K2)], ['p-value', formatPValue(p)],
     ] }],
-    interp: p < 0.05 ? '✗ Departs from normality (p < 0.05).' : '✓ Consistent with a normal distribution (p ≥ 0.05).'
+    interp: p < 0.05 ? 'Departs from normality (p < 0.05).' : 'Consistent with a normal distribution (p ≥ 0.05).'
   });
 }
 
@@ -336,7 +336,7 @@ function oneSampleT(data, yCol, mu) {
       ['p-value', formatPValue(p)], ['95% CI', `${f(m - tc * se)} — ${f(m + tc * se)}`],
       ["Cohen's d", f((m - mu) / sd)],
     ] }],
-    interp: p < 0.05 ? `✓ Mean differs from ${f(mu)} (p < 0.05).` : `✗ No significant difference from ${f(mu)}.`
+    interp: p < 0.05 ? `Mean differs from ${f(mu)} (p < 0.05).` : `No significant difference from ${f(mu)}.`
   });
 }
 
@@ -361,7 +361,7 @@ function unpairedT(data, xCol, yCol) {
       ['t', f(t)], ['df', f(df, 1)], ['p-value', formatPValue(p)],
       ['95% CI (diff)', `${f(diff - tc * se)} — ${f(diff + tc * se)}`], ["Cohen's d", f(d)],
     ] }],
-    interp: p < 0.05 ? '✓ Significant difference between groups (p < 0.05).' : '✗ No significant difference (p ≥ 0.05).'
+    interp: p < 0.05 ? 'Significant difference between groups (p < 0.05).' : 'No significant difference (p ≥ 0.05).'
   });
 }
 
@@ -378,7 +378,7 @@ function pairedT(data, xCol, yCol) {
       ['n pairs', n], ['Mean difference', f(md)], ['t', f(t)], ['df', df],
       ['p-value', formatPValue(p)], ['95% CI', `${f(md - tc * se)} — ${f(md + tc * se)}`], ["Cohen's dz", f(md / sd)],
     ] }],
-    interp: p < 0.05 ? '✓ Significant difference (p < 0.05).' : '✗ No significant difference (p ≥ 0.05).'
+    interp: p < 0.05 ? 'Significant difference (p < 0.05).' : 'No significant difference (p ≥ 0.05).'
   });
 }
 
@@ -413,14 +413,14 @@ function anova(data, xCol, yCol) {
       const q = Math.abs(diff) / se;
       const pTukey = tukeyPValue(q, k, dfw);
       const half = qcrit * se;
-      hsdRows.push([`${names[i]} − ${names[j]}`, f(diff), `${f(diff - half)} — ${f(diff + half)}`, f(q), formatPValue(pTukey), pTukey < 0.05 ? '✓' : '']);
+      hsdRows.push([`${names[i]} − ${names[j]}`, f(diff), `${f(diff - half)} — ${f(diff + half)}`, f(q), formatPValue(pTukey), pTukey < 0.05 ? 'Yes' : '']);
     }
     tables.push({ caption: 'Tukey HSD (pairwise, family-wise α=0.05)', head: ['Comparison', 'Diff', '95% CI', 'q', 'p', 'Sig'], rows: hsdRows });
   }
 
   return composeResult({
     title: `One-way ANOVA — ${yCol} by ${xCol}`, tables,
-    interp: p < 0.05 ? '✓ Significant difference between groups (p < 0.05). See Tukey HSD for which pairs differ.' : '✗ No significant difference between groups (p ≥ 0.05).'
+    interp: p < 0.05 ? 'Significant difference between groups (p < 0.05). See Tukey HSD for which pairs differ.' : 'No significant difference between groups (p ≥ 0.05).'
   });
 }
 
@@ -443,7 +443,7 @@ function kruskal(data, xCol, yCol) {
   return composeResult({
     title: `Kruskal-Wallis — ${yCol} by ${xCol}`,
     tables: [{ head: ['Statistic', 'Value'], rows: [['H', f(H)], ['df', df], ['p-value', formatPValue(p)]] }],
-    interp: p < 0.05 ? '✓ Significant difference between groups.' : '✗ No significant difference.'
+    interp: p < 0.05 ? 'Significant difference between groups.' : 'No significant difference.'
   });
 }
 
@@ -462,7 +462,7 @@ function mannWhitney(data, xCol, yCol) {
   return composeResult({
     title: `Mann-Whitney U — ${yCol} by ${xCol}`,
     tables: [{ head: ['Statistic', 'Value'], rows: [['U', f(U, 0)], ['Z', f(z)], ['p-value', formatPValue(p)], ['Rank-biserial r', f(rrb)]] }],
-    interp: p < 0.05 ? '✓ Significant difference.' : '✗ No significant difference.'
+    interp: p < 0.05 ? 'Significant difference.' : 'No significant difference.'
   });
 }
 
@@ -482,7 +482,7 @@ function wilcoxon(data, xCol, yCol) {
   return composeResult({
     title: `Wilcoxon signed-rank — ${xCol} vs ${yCol}`,
     tables: [{ head: ['Statistic', 'Value'], rows: [['W', f(W, 0)], ['Z', f(z)], ['p-value', formatPValue(p)]] }],
-    interp: p < 0.05 ? '✓ Significant difference.' : '✗ No significant difference.'
+    interp: p < 0.05 ? 'Significant difference.' : 'No significant difference.'
   });
 }
 
@@ -502,7 +502,7 @@ function levene(data, xCol, yCol) {
   return composeResult({
     title: `Levene (Brown-Forsythe) — ${yCol} by ${xCol}`,
     tables: [{ head: ['Statistic', 'Value'], rows: [['W', f(W)], ['df', `${k - 1}, ${N - k}`], ['p-value', formatPValue(p)]] }],
-    interp: p < 0.05 ? '✗ Variances differ across groups (p < 0.05).' : '✓ Equal-variance assumption holds (p ≥ 0.05).'
+    interp: p < 0.05 ? 'Variances differ across groups (p < 0.05).' : 'Equal-variance assumption holds (p ≥ 0.05).'
   });
 }
 
@@ -520,7 +520,7 @@ function fVar(data, xCol, yCol) {
     tables: [{ head: ['Statistic', 'Value'], rows: [
       [`Var (${names[0]})`, f(v1)], [`Var (${names[1]})`, f(v2)], ['F', f(F)], ['df', `${d1}, ${d2}`], ['p-value', formatPValue(Math.min(p, 1))],
     ] }],
-    interp: p < 0.05 ? '✗ Variances differ (p < 0.05).' : '✓ Variances not significantly different.'
+    interp: p < 0.05 ? 'Variances differ (p < 0.05).' : 'Variances not significantly different.'
   });
 }
 
@@ -541,7 +541,7 @@ function correlation(data, xCol, yCol, method) {
   return composeResult({
     title: `${method === 'spearman' ? 'Spearman' : 'Pearson'} correlation — ${xCol} vs ${yCol}`,
     tables: [{ head: ['Statistic', 'Value'], rows }],
-    interp: p < 0.05 ? `✓ Significant correlation (r = ${f(r, 3)}).` : '✗ No significant correlation.'
+    interp: p < 0.05 ? `Significant correlation (r = ${f(r, 3)}).` : 'No significant correlation.'
   });
 }
 
@@ -600,7 +600,7 @@ function multipleRegression(data, yCol, predictors) {
       ] },
       { caption: 'Coefficients', head: ['Term', 'Estimate', 'Std. Error', 't', 'p', '95% CI'], rows: coefRows },
     ],
-    interp: pF < 0.05 ? `✓ Model is significant (p < 0.05), explaining ${(R2 * 100).toFixed(1)}% of variance.` : '✗ Model is not significant overall.'
+    interp: pF < 0.05 ? `Model is significant (p < 0.05), explaining ${(R2 * 100).toFixed(1)}% of variance.` : 'Model is not significant overall.'
   });
 }
 
@@ -677,7 +677,7 @@ function chiSquared(data, xCol, yCol) {
       { caption: 'Contingency table (observed)', head: ['', ...yl], rows: xl.map((x, i) => [x, ...obs[i]]) },
       { head: ['Statistic', 'Value'], rows: [['χ²', f(chi2)], ['df', df], ['p-value', formatPValue(p)], ["Cramér's V", f(cramer)]] },
     ],
-    interp: p < 0.05 ? '✓ Significant association between variables.' : '✗ No significant association.'
+    interp: p < 0.05 ? 'Significant association between variables.' : 'No significant association.'
   });
 }
 
@@ -701,7 +701,7 @@ function fisherExact(data, xCol, yCol) {
       { caption: 'Contingency table', head: ['', ...yl], rows: [[xl[0], a, b], [xl[1], c, d]] },
       { head: ['Statistic', 'Value'], rows: [['Odds ratio', f(or)], ['p-value (two-sided)', formatPValue(pTwo)]] },
     ],
-    interp: pTwo < 0.05 ? '✓ Significant association (p < 0.05).' : '✗ No significant association.'
+    interp: pTwo < 0.05 ? 'Significant association (p < 0.05).' : 'No significant association.'
   });
 }
 
@@ -727,7 +727,7 @@ function twoProportion(data, xCol, yCol) {
       ['Difference', f(diff, 4)], ['z', f(z)], ['p-value', formatPValue(p)],
       ['95% CI (diff)', `${f(diff - 1.96 * seDiff, 4)} — ${f(diff + 1.96 * seDiff, 4)}`],
     ] }],
-    interp: p < 0.05 ? '✓ Proportions differ significantly (p < 0.05).' : '✗ No significant difference in proportions.'
+    interp: p < 0.05 ? 'Proportions differ significantly (p < 0.05).' : 'No significant difference in proportions.'
   });
 }
 
