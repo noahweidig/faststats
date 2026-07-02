@@ -4,44 +4,44 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=00CCCC&center=true&vCenter=true&width=600&lines=QuickPlot+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=008080&center=true&vCenter=true&width=600&lines=QuickPlot+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything" alt="QuickPlot">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=008080&center=true&vCenter=true&width=600&lines=FastStats+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything" alt="QuickPlot">
 </picture>
 
 <h3>Interactive Data Wrangling & Visualization — No Code Required</h3>
 
 <p>
-  <a href="https://noahweidig.shinyapps.io/quickplot/">
+  <a href="https://noahweidig.com/faststats/">
     <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20App-Launch%20QuickPlot-008080?style=for-the-badge" alt="Live App">
   </a>
 </p>
 
 <p>
-  <a href="https://github.com/noahweidig/quickplot/actions/workflows/deploy.yml">
-    <img src="https://github.com/noahweidig/quickplot/actions/workflows/deploy.yml/badge.svg" alt="Deploy">
+  <a href="https://github.com/noahweidig/faststats/actions/workflows/deploy.yml">
+    <img src="https://github.com/noahweidig/faststats/actions/workflows/deploy.yml/badge.svg" alt="Deploy">
   </a>
   <a href="https://www.r-project.org/">
     <img src="https://img.shields.io/badge/R-≥4.0-276DC3?style=flat&logo=r&logoColor=white" alt="R">
   </a>
   <a href="https://shiny.posit.co/">
-    <img src="https://img.shields.io/badge/Shiny-Framework-75AADB?style=flat&logo=rstudio&logoColor=white" alt="Shiny">
+    <img src="https://img.shields.io/badge/Pure-JS-75AADB?style=flat&logo=rstudio&logoColor=white" alt="Shiny">
   </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat" alt="MIT License">
   </a>
-  <img src="https://img.shields.io/github/stars/noahweidig/quickplot?style=flat&color=gold" alt="Stars">
+  <img src="https://img.shields.io/github/stars/noahweidig/faststats?style=flat&color=gold" alt="Stars">
 </p>
 
 <br>
 
-> **QuickPlot** turns raw data into insight in seconds. Upload a file, wrangle it visually,
+> **FastStats** turns raw data into insight in seconds. Upload a file, wrangle it visually,
 > build publication-quality plots, run statistics — then export everything, including the
 > reproducible R code, with a single click.
 
 <br>
 
-[**Try it now →**](https://noahweidig.shinyapps.io/quickplot/) &nbsp;·&nbsp;
-[Report a bug](https://github.com/noahweidig/quickplot/issues) &nbsp;·&nbsp;
-[Request a feature](https://github.com/noahweidig/quickplot/issues)
+[**Try it now →**](https://noahweidig.com/faststats/) &nbsp;·&nbsp;
+[Report a bug](https://github.com/noahweidig/faststats/issues) &nbsp;·&nbsp;
+[Request a feature](https://github.com/noahweidig/faststats/issues)
 
 <br>
 
