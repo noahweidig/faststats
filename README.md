@@ -3,15 +3,15 @@
 <br>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=00CCCC&center=true&vCenter=true&width=600&lines=QuickPlot+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything">
-  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=008080&center=true&vCenter=true&width=600&lines=FastStats+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything" alt="QuickPlot">
+  <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=00CCCC&center=true&vCenter=true&width=600&lines=FastStats+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=40&duration=3000&pause=1000&color=008080&center=true&vCenter=true&width=600&lines=FastStats+%F0%9F%93%88;No-Code+Data+Science;Visualize+Anything" alt="FastStats">
 </picture>
 
 <h3>Interactive Data Wrangling & Visualization — No Code Required</h3>
 
 <p>
   <a href="https://noahweidig.com/faststats/">
-    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20App-Launch%20QuickPlot-008080?style=for-the-badge" alt="Live App">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Live%20App-Launch%20FastStats-008080?style=for-the-badge" alt="Live App">
   </a>
 </p>
 
@@ -51,7 +51,7 @@
 
 ## Table of Contents
 
-- [Why QuickPlot?](#-why-quickplot)
+- [Why FastStats?](#-why-quickplot)
 - [Feature Tour](#-feature-tour)
 - [Built-in Datasets](#-built-in-datasets)
 - [Workflow](#-workflow)
@@ -64,11 +64,11 @@
 
 ---
 
-## ✨ Why QuickPlot?
+## ✨ Why FastStats?
 
-Most data visualization tools force a choice: **powerful but complex** (write R/Python code) or **simple but limited** (point-and-click with no flexibility). QuickPlot breaks that trade-off.
+Most data visualization tools force a choice: **powerful but complex** (write R/Python code) or **simple but limited** (point-and-click with no flexibility). FastStats breaks that trade-off.
 
-| | Spreadsheet tools | Coding in R/Python | **QuickPlot** |
+| | Spreadsheet tools | Coding in R/Python | **FastStats** |
 |---|:---:|:---:|:---:|
 | No installation needed | ✅ | ❌ | ✅ |
 | Handles CSV, Excel, TSV | ✅ | ✅ | ✅ |
@@ -82,7 +82,7 @@ Most data visualization tools force a choice: **powerful but complex** (write R/
 
 ## 🗺️ Feature Tour
 
-QuickPlot is organized into five purpose-built tabs, each one a step deeper into your data.
+FastStats is organized into five purpose-built tabs, each one a step deeper into your data.
 
 <br>
 
@@ -148,7 +148,7 @@ Go beyond visualization with built-in statistical tools.
 
 ## 📦 Built-in Datasets
 
-No data file? No problem. QuickPlot ships with four classic datasets to explore immediately.
+No data file? No problem. FastStats ships with four classic datasets to explore immediately.
 
 | Dataset | Rows | Description |
 |---|:---:|---|
@@ -337,7 +337,7 @@ git push origin feature/your-idea
 
 Built with R, Shiny, and a healthy obsession with making data science accessible.
 
-**If QuickPlot saves you time, a ⭐ on GitHub means a lot — thank you!**
+**If FastStats saves you time, a ⭐ on GitHub means a lot — thank you!**
 
 <br>
 
