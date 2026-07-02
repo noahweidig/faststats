@@ -22,8 +22,8 @@
   <a href="https://www.r-project.org/">
     <img src="https://img.shields.io/badge/R-≥4.0-276DC3?style=flat&logo=r&logoColor=white" alt="R">
   </a>
-  <a href="https://shiny.posit.co/">
-    <img src="https://img.shields.io/badge/Pure-JS-75AADB?style=flat&logo=rstudio&logoColor=white" alt="Shiny">
+  <a href="https://noahweidig.com/faststats">
+    <img src="https://img.shields.io/badge/Pure-JS-75AADB?style=flat&logo=rstudio&logoColor=white" alt="Pure JS">
   </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-yellow.svg?style=flat" alt="MIT License">
@@ -51,7 +51,7 @@
 
 ## Table of Contents
 
-- [Why FastStats?](#-why-quickplot)
+- [Why FastStats?](#-why-faststats)
 - [Feature Tour](#-feature-tour)
 - [Built-in Datasets](#-built-in-datasets)
 - [Workflow](#-workflow)
@@ -72,7 +72,6 @@ Most data visualization tools force a choice: **powerful but complex** (write R/
 |---|:---:|:---:|:---:|
 | No installation needed | ✅ | ❌ | ✅ |
 | Handles CSV, Excel, TSV | ✅ | ✅ | ✅ |
-| ggplot2-quality visuals | ❌ | ✅ | ✅ |
 | Interactive (Plotly) charts | ❌ | ✅ | ✅ |
 | Reproducible code export | ❌ | ✅ | ✅ |
 | No coding required | ✅ | ❌ | ✅ |
@@ -187,72 +186,18 @@ No data file? No problem. FastStats ships with four classic datasets to explore 
 
 ---
 
-## 🛠️ Technology Stack
-
-<div align="center">
-
-| Layer | Technology |
-|---|---|
-| **Language** | R (≥ 4.0) |
-| **Web framework** | [Shiny](https://shiny.posit.co/) |
-| **Data manipulation** | [tidyverse](https://www.tidyverse.org/) — dplyr, tidyr, readr, and friends |
-| **Static visualizations** | [ggplot2](https://ggplot2.tidyverse.org/) |
-| **Interactive charts** | [Plotly for R](https://plotly.com/r/) |
-| **Interactive tables** | [DT](https://rstudio.github.io/DT/) |
-| **Correlation plots** | [ggcorrplot](https://github.com/kassambara/ggcorrplot) |
-| **Statistical modeling** | [broom](https://broom.tidymodels.org/), [report](https://easystats.github.io/report/) |
-| **File I/O** | readxl, janitor, lubridate |
-| **UI theming** | [shinythemes](https://rstudio.github.io/shinythemes/) + custom CSS |
-| **Drag-and-drop UI** | [sortable](https://rstudio.github.io/sortable/) |
-| **Cloud deployment** | [shinyapps.io](https://www.shinyapps.io/) |
-| **CI/CD** | GitHub Actions |
-
-</div>
-
----
-
 ## 🚀 Getting Started
 
 ### Option 1 — Use the Live App (Zero Setup)
 
-Open **[https://noahweidig.shinyapps.io/quickplot/](https://noahweidig.shinyapps.io/quickplot/)** in any modern browser. Nothing to install.
-
-<br>
-
-### Option 2 — Run Locally
-
-**Prerequisites:** R ≥ 4.0 and RStudio (recommended)
-
-**1. Clone the repository**
-```bash
-git clone https://github.com/noahweidig/quickplot.git
-cd quickplot
-```
-
-**2. Install dependencies** *(run once inside R)*
-```r
-install.packages(c(
-  "shiny", "shinythemes",
-  "tidyverse", "readxl", "janitor", "lubridate",
-  "gapminder", "palmerpenguins",
-  "plotly", "DT", "sortable", "ggcorrplot",
-  "broom", "report", "RColorBrewer", "scales"
-))
-```
-
-**3. Launch the app**
-```r
-shiny::runApp("app")
-```
-
-The app opens automatically in your default browser at `http://localhost:<port>`.
+Open **[https://noahweidig.com/faststats/](https://noahweidig.com/faststats/)** in any modern browser. Nothing to install.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-quickplot/
+faststats/
 │
 ├── app/
 │   ├── app.R              # Complete Shiny application (~3,400 lines)
@@ -273,21 +218,7 @@ quickplot/
 
 ## ☁️ Deployment
 
-The app deploys automatically to **shinyapps.io** on every push to `main` via GitHub Actions.
-
-**How it works:**
-1. GitHub Actions spins up an R environment
-2. All 21 dependencies are installed
-3. `rsconnect::deployApp()` pushes the app to shinyapps.io
-
-**To deploy your own fork**, add these three secrets under
-*Settings → Secrets and variables → Actions*:
-
-| Secret | Where to find it |
-|---|---|
-| `SHINYAPPS_NAME` | Your shinyapps.io account username |
-| `SHINYAPPS_TOKEN` | [shinyapps.io dashboard → Tokens](https://www.shinyapps.io/admin/#/tokens) |
-| `SHINYAPPS_SECRET` | Same page as the token |
+The app deploys automatically to **GitHub Pages** on every push to `main` via GitHub Actions.
 
 ---
 
@@ -297,7 +228,7 @@ Contributions are warmly welcome! Here's how to get started:
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/<your-username>/quickplot.git
+git clone https://github.com/<your-username>/faststats.git
 
 # 2. Create a feature branch
 git checkout -b feature/your-idea
@@ -335,7 +266,7 @@ git push origin feature/your-idea
 
 <div align="center">
 
-Built with R, Shiny, and a healthy obsession with making data science accessible.
+Built with JS and a healthy obsession with making data science accessible.
 
 **If FastStats saves you time, a ⭐ on GitHub means a lot — thank you!**
 
